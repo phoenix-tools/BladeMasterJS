@@ -1,4 +1,3 @@
-
 /**
  * 
  * @title BladeMaster.js
@@ -265,7 +264,7 @@ var BladeMasters = {
 		        var r, n;
 		        return t == a && (i += .075),
 		        n = e,
-		        ((r = t) == BladeMasters.traitMap.fire && n == BladeMasters.traitMap.earth || r == BladeMasters.traitMap.water && n == BladeMasters.traitMap.fire || r == BladeMasters.traitMap.lightening  && n == BladeMasters.traitMap.water || r == BladeMasters.traitMap.earth && n == BladeMasters.traitMap.lightening) && (i += .075),
+		        ((r = t) == BladeMasters.traitMap.fire && n == BladeMasters.traitMap.earth || r == BladeMasters.traitMap.water && n == BladeMasters.traitMap.fire || r == BladeMasters.traitMap.lightning  && n == BladeMasters.traitMap.water || r == BladeMasters.traitMap.earth && n == BladeMasters.traitMap.lightning) && (i += .075),
 		        function(t, a) {
 		            return t == BladeMasters.traitMap.fire && a == BladeMasters.traitMap.water || t == BladeMasters.traitMap.water && a == BladeMasters.traitMap.lightning || t == BladeMasters.traitMap.lightning && a == BladeMasters.traitMap.earth || t == BladeMasters.traitMap.earth && a == BladeMasters.traitMap.fire
 		        }(t, e) && (i -= .075),
