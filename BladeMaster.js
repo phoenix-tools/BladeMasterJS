@@ -10,6 +10,7 @@
  
 var BladeMasters = {
     
+	marketPrices : {},
 	traitMap : {},
 	character : {},
 	weapon : {},
@@ -21,6 +22,8 @@ var BladeMasters = {
 	checkBattleStats: function() {
 		
 		
+		this.loadHeader();
+		this.loadPrices();
 
 		if(!this.checkIfBattlePage()) {
 			return;
@@ -32,6 +35,85 @@ var BladeMasters = {
 		this.calculateBattle();
 		
 	}, 
+	
+	loadHeader : function() {
+		
+		if (document.querySelector('.BladeMasterJS')) {
+			return;
+		}
+		
+		var headerElement= document.createElement('div');
+		
+		headerElement.innerHTML = '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px;">BladeMasterJS <span class="header-separator"> | </span> SKILL <span class="skill-price">$NA</span> <span class="header-separator"> | </span> BNB <span class="bnb-price">$NA</span> <span class="header-separator"> | </span> <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!">TIP <span class="recommended-bnb-tip">.01</span> BNB  </a> <span class="header-separator"> | </span> <a class="skill-tip" title="Send a Tip to the BladeMasterJS Developemnt Team!" href="#tip-blademaster-dev">TIP <span class="recommended-skill-tip">.01</span> SKILL</a></div><style>.header-separator {margin:7px;}</style>'
+		
+		var firstChild = document.body.firstChild;
+		firstChild.parentNode.insertBefore(headerElement, firstChild);
+		
+		document.querySelector('.bnb-tip').addEventListener('click', function() {
+		  if (typeof web3 === 'undefined') {
+		    return renderMessage('You need to install MetaMask to use this feature.  https://metamask.io')
+		  }
+		
+		  var user_address = web3.eth.accounts[0]
+		  web3.eth.sendTransaction({
+		    to: "0x2c238ad3411BdcDC0E4175f9320924ebC335E9E0",
+		    from: user_address,
+		    chainId: '56',
+		    value: ".0001",
+		  }, function (err, transactionHash) {
+		    if (err) return renderMessage('Oh no!: ' + err.message)
+		
+		    // If you get a transactionHash, you can assume it was sent,
+		    // or if you want to guarantee it was received, you can poll
+		    // for that transaction to be mined first.
+		    renderMessage('Thanks!')
+		  })
+		})
+		
+	}
+	
+	,
+	
+	loadPrices : function() {
+		
+		if (this.marketPrices.bnb) {
+			return;
+		}
+		
+		var element = document.querySelector('.calculator-icon-div button');
+		var event = new MouseEvent('click', {
+		  'view': window,
+		  'bubbles': true,
+		  'cancelable': true
+		});
+		
+		element.dispatchEvent(event);
+		setTimeout(function() {
+			BladeMasters.marketPrices.bnb = document.querySelectorAll(".price-input")[0].value;
+			BladeMasters.marketPrices.skill =  document.querySelectorAll(".price-input")[1].value;
+			
+			/* set these prices into the header */
+			document.querySelector('.bnb-price').innerText = "$" + BladeMasters.marketPrices.bnb
+			document.querySelector('.skill-price').innerText = "$" + BladeMasters.marketPrices.skill
+			
+			
+			/* close modal */
+			setTimeout(function() {
+
+				var element = document.querySelector('.close');
+				var event = new MouseEvent('click', {
+				  'view': window,
+				  'bubbles': true,
+				  'cancelable': true
+				});
+				
+				element.dispatchEvent(event);
+			} ,  200)
+			
+		}, 600)
+	}
+	
+	,
 	
 	/**
 	 *
