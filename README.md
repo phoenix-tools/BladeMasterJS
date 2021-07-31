@@ -29,11 +29,14 @@ If you have any trouble installing please reach out in the Discord private room 
 Happy Forging! 
 
 
-## Goals / Methods
+## Features
 
 * Load Weapon
 * Load Character
 * Auto-calculate win % according to loaded screen, loaded profile, loaded character
+* Retrieve BNB, SKILL market price
+* Calculate wallet SKILL USD value
+* Tip DEV .01BNB
 
 ## Stretch Goals
 
