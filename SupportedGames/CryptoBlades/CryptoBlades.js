@@ -18,28 +18,21 @@
 	character : {},
 	weapon : {},
 	enemies: {},
+	intervals : {},
 
-	/**
-	 *
-	 */
-	checkBattleStats: function() {
+	init : function() {
 		
-	
 		this.loadHeader();
-		this.loadListeners();
 		this.loadPrices();
 		this.loadWeb3();
+		
+		this.intervals.listeners = setInterval(function( bm ) {
+			bm.loadListeners();
+		}, 500 , this )
 
-		if(this.checkIfBattlePage()) {
-			this.loadCharacter();
-			this.loadWeapon();
-			this.loadEnemies();
-			this.calculateBattle();
-		}
-		
+	}
 	
-		
-	}, 
+	,
 	
 	loadWeb3 : function() {
 		
@@ -107,7 +100,6 @@
 		
 		/* make sure element exitst before adding listener */
 		if (document.querySelector('.bnb-tip')) {
-			
 			/* listen for TIP BNB event */
 			document.querySelector('.bnb-tip').addEventListener('click', function() {
 			
@@ -122,7 +114,6 @@
 				    ],
 				  });
 			} , {once :true} )
-			
 		}
 		
 		/* make sure element exitst before adding listener */
@@ -144,11 +135,39 @@
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
+					console.log("mouseenter")
+					console.log(BladeMasterJS.intervals.battle)
+					
+					BladeMasterJS.checkIfBattlePage();
 					BladeMasterJS.loadCharacter();
 					BladeMasterJS.loadWeapon();
 					BladeMasterJS.loadEnemies();
 					BladeMasterJS.calculateBattle();
+					
+					if (BladeMasterJS.intervals.battle) {
+						return;
+					}
+					
+					console.log("set BladeMasterJS.intervals.battle");
+					BladeMasterJS.intervals.battle = setInterval(function() {
+						console.log("running Interval");
+						BladeMasterJS.loadCharacter();
+						BladeMasterJS.loadWeapon();
+						BladeMasterJS.loadEnemies();
+						BladeMasterJS.calculateBattle();
+					} , 500 );
+				
+				
 			} , {once :true} )
+			
+			/* make sure that manual weapon mouseovers always renews the battlestats */
+			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
+					console.log("mouseleave")
+					clearInterval(BladeMasterJS.intervals.battle)
+					BladeMasterJS.intervals.battle = 0;
+			} , {once :true} )
+			
+			
 		}
 		
 		
@@ -255,6 +274,7 @@
 	 *
 	 */
 	checkIfBattlePage : function() {
+		
 		var currentPage = window.location.href.replace(window.location.origin + '/#/' , '');
 		
 		var isCombatPage = true;
@@ -267,9 +287,15 @@
 			isCombatPage = false;
 		}
 		
+		
+		
 		if (isCombatPage) {
+			
+			console.log("isCombatPage")
+			
 			document.querySelectorAll('.victory-chance').forEach(function( box ) {
 				box.style.position = "relative"
+				box.style.marginBottom = "-44px;"
 			});
 		}
 		
@@ -344,8 +370,11 @@
 	
 	,
 	
+	/**
+	 * 
+	 */ 
 	getWeaponAttributes : function( name ) {
-		
+		console.log('getWeaponAttributes')
 		/* set defaults */
 		this.weapon.stat = []; 
 		this.weapon.bonusPower = 0; 
@@ -366,7 +395,9 @@
 		} 
 		
 		/* if no weapon tooltip is detected then bail */
-		if(!document.querySelector('.tooltip-inner')) {
+		var toolTipInner = document.querySelector('.tooltip-inner');
+		if(!toolTipInner || !toolTipInner.innerText) {
+			console.log("return because no tooltip")
 			return;
 		}
 		
@@ -375,18 +406,18 @@
 			//console.log(element.innerText);
 		//})
 
-		var statsRaw = document.querySelector('.tooltip-inner').innerText;
+		this.weapon.statsRaw = toolTipInner.innerText;
 		
 		/* parse raw text by new line */
-		var statsParsed = statsRaw.split(/\r?\n/);
-		//console.log(statsParsed);
+		this.weapon.statsParsed = this.weapon.statsRaw.split(/\r?\n/);
+		console.log(this.weapon.statsParsed);
 		
-		if (statsParsed.length < 2 ) {
+		if (this.weapon.statsParsed.length < 1 ) {
 			return;
 		}
 
 		var count = 1;
-		for ( lineItem of statsParsed ) {
+		for ( lineItem of this.weapon.statsParsed ) {
 			//console.log(lineItem);
 			var traitParts = lineItem.split(":")
 			
@@ -397,6 +428,8 @@
 			if (!traitParts[1].match(/\d+/)) {
 				continue; 
 			}
+			
+			console.log(traitParts[0]);
 			
 			switch (traitParts[0]) {
 				case "★":
@@ -419,15 +452,18 @@
 					this.weapon.stat[count].element = this.getElementCode("lightning");
 					break;
 				case "DEX":
-					this.weapon.stat[count].element = this.getElementCode("lightning");
+					this.weapon.stat[count].element = this.getElementCode("earth");
 					break;
 				case "PWR":
 				case "Bonus power":
 					this.weapon.bonusPower = this.weapon.bonusPower +  parseInt(traitParts[1].match(/\d+/).pop().trim());
+					console.log(this.weapon.bonusPower);
 					continue;
 					break;
 					
 			}
+			
+			console.log(parseInt(traitParts[1].match(/\d+/).pop().trim()));
 			
 			BladeMasterJS.weapon.stat[count].power = parseInt(traitParts[1].match(/\d+/).pop().trim());
 			
@@ -473,10 +509,13 @@
 	 */
 	calculateBattle : function() {
 		
+		
+		console.log("calculateBattle")
+		 	
+		
 	      /* if no weapon tooltip is detected then bail */
-		if(!this.weapon.stat[1].power) {
-			//console.log('BladeMasterJS: Bail on battle calcutlation')
-			//console.log('"no such thing as a powerless blade"')
+		if(!this.weapon.stat[1].power && !this.weapon.bonusPower) {
+			console.log('"no such thing as a powerless blade"')
 			return;
 		}
 		
@@ -485,7 +524,6 @@
 			return;
 		}
 		
-		 	
 	 	function t(t, a, e) {
 	        let i = 1;
 	        var r, n;
@@ -550,16 +588,10 @@
 setTimeout(function() {
 	/* annouce to console that BladeMasterJS is loaded */
 	console.log('BladeMasterJS loaded');
-	
-	setInterval(function() {
-		
-		/* Start Routine Checks */
-		BladeMasterJS.checkBattleStats();
-		
-	} , 1000 );
+
 	
 	/* prevent delay on first run */
-	BladeMasterJS.checkBattleStats();
+	BladeMasterJS.init();
 	
 	
 } , 2000 )
