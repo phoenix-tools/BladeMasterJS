@@ -67,8 +67,34 @@
 		
 		var headerElement= document.createElement('div');
 		
-		headerElement.innerHTML = '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px;">BladeMasterJS <span class="header-separator"> | </span> <b>$BNB</b> <span class="bnb-price" title="Market price of BNB in USD"></span>   <span class="header-separator"> | </span>  <b>$SKILL</b> <span class="skill-price" title="Market price of SKILL in USD"></span>  <span class="header-separator"> | </span> Balance Converter:  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>   <span class="header-separator"> | </span> <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!">TIP <span class="recommended-bnb-tip">.01</span> <b>BNB</b>  </a> <span class="header-separator"></div><style>.header-separator {margin:7px;}</style>'
+		var htmlTemplate = ''
+		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between"><div>'
+		+ '		BladeMasterJS '
 		
+		+ '		<span class="header-separator"> | </span>'
+		
+		+ '		<b>$BNB</b> <span class="bnb-price" title="Market price of BNB in USD"></span>  <span class="bnb-balance" style="color:lightgreen"></span>'
+		
+		+ '		<span class="header-separator"> | </span>'
+		
+		+ '		<b>$SKILL</b> <span class="skill-price" title="Market price of SKILL in USD"></span>'
+		
+		+ '	</div><div>'
+		
+		+ '		<b>SKILL</b>:  <span class="skill-balance-skill" style="color:lightblue"></span>  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>'
+		
+		+ '		<span class="header-separator"> | </span>'
+		
+		+ '		<b>BNB</b>:  <span class="bnb-balance-bnb" style="color:lightblue"></span>  <span class="bnb-balance-usd" style="color:lightgreen"></span>  <span class="bnb-balance-skill" style="color:lightgreen"></span>'
+		
+		+ '     <span class="header-separator"> | </span>'
+		
+		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!">TIP <span class="recommended-bnb-tip">.01</span> <b>BNB</b></a>'
+		+ '</div></div>'
+		+ ' '
+		+ '<style>.header-separator {margin:7px;}</style>'
+		
+		headerElement.innerHTML = htmlTemplate;
 		var firstChild = document.body.firstChild;
 		firstChild.parentNode.insertBefore(headerElement, firstChild);
 		
@@ -137,11 +163,11 @@
 			return;
 		}
 		
-		/* get user balance, does not include staked BNB */
+		/* get user SKILL balance, does not include staked SKILL */
 		this.balances.skill = document.querySelector('.balance').innerText.replace(' SKILL' , "").trim();
 		
 		/* load BNB and SKILL prices from Coingecko API */
-		var request = new XMLHttpRequest();
+		var coingeckoRequest = new XMLHttpRequest();
 			
 		var params = {
             vs_currency: "usd",
@@ -155,12 +181,12 @@
         }
         
                 
-		request.open("GET", apiURL.href );
-		request.send();
+		coingeckoRequest.open("GET", apiURL.href );
+		coingeckoRequest.send();
 		
-		request.onload = () => {
+		coingeckoRequest.onload = () => {
 	
-			var responseJSON  = JSON.parse(request.response);
+			var responseJSON  = JSON.parse(coingeckoRequest.response);
 
 			BladeMasterJS.marketPrices.bnb = responseJSON[0].current_price;
 			BladeMasterJS.marketPrices.skill = responseJSON[1].current_price;
@@ -172,11 +198,53 @@
 			
 			
 			/* set these prices into the header */
-			document.querySelector('.bnb-price').innerText = "" + BladeMasterJS.marketPrices.bnb +" USD "
-			document.querySelector('.skill-price').innerText = "" + BladeMasterJS.marketPrices.skill + " USD"
-			document.querySelector('.skill-balance-usd').innerText = "(" + BladeMasterJS.balances.usd_skill + " USD) "
+			document.querySelector('.bnb-price').innerText = "" + BladeMasterJS.marketPrices.bnb +" "
+			document.querySelector('.skill-price').innerText = "" + BladeMasterJS.marketPrices.skill + " "
+			document.querySelector('.skill-balance-skill').innerText =  BladeMasterJS.balances.skill + " SKILL  "
+			document.querySelector('.skill-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_skill + ") "
 			document.querySelector('.skill-balance-bnb').innerText = "(" + BladeMasterJS.balances.bnb_skill + " BNB) "
+			
+			
+			/* load BNB Balance and Calculate Transactions from Custom API */
+			var bscscanRequest = new XMLHttpRequest();
+				
+			var params = {
+	            ethAddress: window.ethereum.selectedAddress,
+	        }
+	        
+	        apiURL = new URL("https://bscscan-api.vercel.app/api/get-balance");
+	        
+	        for (const key in params ) {
+	        	apiURL.searchParams.append(key , params[key]);
+	        }
+	        
+	                
+			bscscanRequest.open("GET", apiURL.href );
+			bscscanRequest.send();
+			
+			bscscanRequest.onload = () => {
+		
+				var responseJSON  = JSON.parse(bscscanRequest.response);
+				
+				console.log(responseJSON.balances);
+				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.inETH).toFixed(4);
+				
+				/* figure out dollar balance */
+				BladeMasterJS.balances.usd_bnb =  ( parseFloat(BladeMasterJS.balances.bnb , 8 ) * parseFloat(BladeMasterJS.marketPrices.bnb , 8 ) ).toFixed(2);
+				
+				BladeMasterJS.balances.skill_bnb =  ( parseFloat(BladeMasterJS.balances.usd_bnb , 8 ) / parseFloat(BladeMasterJS.marketPrices.skill , 8 ) ).toFixed(4);
+				
+				
+				/* set these prices into the header */
+				document.querySelector('.bnb-balance-bnb').innerText =  BladeMasterJS.balances.bnb + " BNB  "
+				document.querySelector('.bnb-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_bnb + ") "
+				document.querySelector('.bnb-balance-skill').innerText = "(" + BladeMasterJS.balances.skill_bnb + " SKILL) "
+			};
+		
 		};
+		
+		
+	
 		
 
 	}
@@ -488,7 +556,7 @@ setTimeout(function() {
 		/* Start Routine Checks */
 		BladeMasterJS.checkBattleStats();
 		
-	} , 700 );
+	} , 1000 );
 	
 	/* prevent delay on first run */
 	BladeMasterJS.checkBattleStats();
