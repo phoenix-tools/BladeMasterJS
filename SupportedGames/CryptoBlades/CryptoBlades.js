@@ -80,6 +80,15 @@
 		
 		+ '		<b>BNB</b>:  <span class="bnb-balance-bnb" style="color:lightblue"></span>  <span class="bnb-balance-usd" style="color:lightgreen"></span>  <span class="bnb-balance-skill" style="color:lightgreen"></span>'
 		
+		+ '		<span class="header-separator"> | </span>'
+		
+		+ '		<b>FEES</b>:  '
+		
+		
+		+ '     <span class="fee-label" style="color:lightblue">Today </span> <span class="fee-bnb-today" style="color:lightblue"></span>'
+		+ '     <span class="fee-label" style="color:lightblue">Week</span> <span class="fee-bnb-week" style="color:lightblue"></span>'
+		+ '     <span class="fee-label" style="color:lightblue">Month</span> <span class="fee-bnb-month" style="color:lightblue"></span>'
+		
 		+ '     <span class="header-separator"> | </span>'
 		
 		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!">TIP <span class="recommended-bnb-tip">.01</span> <b>BNB</b></a>'
@@ -231,7 +240,7 @@
 	            ethAddress: window.ethereum.selectedAddress,
 	        }
 	        
-	        apiURL = new URL("https://bscscan-api.vercel.app/api/get-balance");
+	        apiURL = new URL("https://bscscan-api.vercel.app/api/gamestats");
 	        
 	        for (const key in params ) {
 	        	apiURL.searchParams.append(key , params[key]);
@@ -258,6 +267,9 @@
 				document.querySelector('.bnb-balance-bnb').innerText =  BladeMasterJS.balances.bnb + " BNB  "
 				document.querySelector('.bnb-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_bnb + ") "
 				document.querySelector('.bnb-balance-skill').innerText = "(" + BladeMasterJS.balances.skill_bnb + " SKILL) "
+				document.querySelector('.fee-bnb-today').innerText = "(" + parseFloat(responseJSON.txFees.today).toFixed(4) + " BNB) "
+				document.querySelector('.fee-bnb-week').innerText = "(" + parseFloat(responseJSON.txFees.thisWeek).toFixed(4) + " BNB) "
+				document.querySelector('.fee-bnb-month').innerText = "(" + parseFloat(responseJSON.txFees.thisMonth).toFixed(4) + " BNB) "
 			};
 		
 		};
