@@ -14,7 +14,7 @@ Install a Chrome extension that will allow custom JS & CSS codefor websites. I r
 https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
 
 Access this file and view the raw version of the code. Copy it and paste it into your Chrome extension's custom JS area:
-https://github.com/phoenix-tools/BladeMasterJS/blob/master/BladeMaster.js
+https://raw.githubusercontent.com/phoenix-tools/BladeMasterJS/master/BladeMasterJS.js?token=AAPI2H5MWNLI4WPXLXXAVTTBBM2B4
 
 ![image](https://user-images.githubusercontent.com/2002207/127751640-db633258-a0f3-4c78-82d5-8c479f67ded1.png)
 
