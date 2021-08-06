@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 1.2
+ * @ver 1.2.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -90,7 +90,7 @@
 		
 		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> LAST 24 HOURS </span>'
 		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> LAST 7 DAYS </span>'
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span>LAST 31 DAYS </span> '
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span>&NBSP;LAST 31 DAYS </span> '
 		
 		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
 		
@@ -169,7 +169,7 @@
 						break;	
 				}
 				
-				console.log("BladeMasterJS.currentFeeScope back")
+				console.log("BladeMasterJS.currentFeeScope back");
 				console.log(BladeMasterJS.currentFeeScope);
 				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
 			})
@@ -218,8 +218,8 @@
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
-					console.log("mouseenter")
-					console.log(BladeMasterJS.intervals.battle)
+					console.log("mouseenter");
+					console.log(BladeMasterJS.intervals.battle);
 					
 					BladeMasterJS.checkIfBattlePage();
 					BladeMasterJS.loadCharacter();
@@ -390,10 +390,9 @@
 		}
 		
 		
-		
 		if (isCombatPage) {
 			
-			console.log("isCombatPage")
+			console.log("isCombatPage");
 			
 			document.querySelectorAll('.victory-chance').forEach(function( box ) {
 				box.style.position = "relative"
@@ -476,7 +475,9 @@
 	 * 
 	 */ 
 	getWeaponAttributes : function( name ) {
-		console.log('getWeaponAttributes')
+		
+		console.log('getWeaponAttributes');
+		
 		/* set defaults */
 		this.weapon.stat = []; 
 		this.weapon.bonusPower = 0; 
@@ -613,14 +614,13 @@
 	 */
 	calculateBattle : function() {
 		
-		
-		console.log("calculateBattle")
-		console.log(BladeMasterJS.weapon)
+		console.log("calculateBattle");
+		console.log(BladeMasterJS.weapon);
 		 	
 		
-	      /* if no weapon tooltip is detected then bail */
+	    /* if no weapon tooltip is detected then bail */
 		if(!this.weapon.stat[1].power && !this.weapon.bonusPower) {
-			console.log('"no such thing as a powerless blade"')
+			console.log("no such thing as a powerless blade");
 			return;
 		}
 		
