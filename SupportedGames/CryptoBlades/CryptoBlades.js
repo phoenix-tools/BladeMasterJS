@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 1.0
+ * @ver 1.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
