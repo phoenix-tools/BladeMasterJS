@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 1.0
+ * @ver 1.2
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -76,7 +76,7 @@
 		
 		+ '	</div><div>'
 		
-		+ '		<b>SKILL</b>:  <span class="skill-balance-skill" style="color:lightblue"></span>  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>'
+		+ '		<b>SKILL</b>:  <span class="skill-balance-skill" style="color:gold"></span>  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>'
 		
 		+ '		<span class="header-separator"> | </span>'
 		
@@ -86,15 +86,17 @@
 		
 		+ '		<b>FEES</b>:  '
 		
-		//+ '		<span class="cycle-fee-scope-back" style=""><img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="width:25px;transform: scaleX(-1);margin-left: 10px;    margin-right: -3px;    margin-left: 2px;"></span>'	
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:lightblue;">Today  <span class="fee-bnb-today" style="color:lightblue"></span></span>'
-		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:lightblue;display:none;">Week <span class="fee-bnb-week" style="color:lightblue"></span></span>'
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:lightblue;display:none">Month <span class="fee-bnb-month" style="color:lightblue"></span></span> '
+		//+ '		<span class="cycle-fee-scope-back" style=""><img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="width:25px;transform: scaleX(-1);margin-left: 10px;    margin-right: -3px;    margin-left: 2px;"></span>'
+		
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> LAST 24 HOURS </span>'
+		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> LAST 7 DAYS </span>'
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span>LAST 31 DAYS </span> '
+		
 		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
 		
 		+ '     <span class="header-separator"> | </span>'
 		
-		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!">TIP <span class="recommended-bnb-tip">.01</span> <b>BNB</b></a>'
+		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!"><b>TIP <span class="recommended-bnb-tip">.01</span> BNB</b></a>'
 		+ '</div></div>'
 		+ ' '
 		+ '<style>.header-separator {margin:7px;}</style>'
@@ -334,9 +336,23 @@
 				document.querySelector('.bnb-balance-bnb').innerText =  BladeMasterJS.balances.bnb + " BNB  "
 				document.querySelector('.bnb-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_bnb + ") "
 				document.querySelector('.bnb-balance-skill').innerText = "(" + BladeMasterJS.balances.skill_bnb + " SKILL) "
+				
+				/* calculate fee bnb cost in USD */
+				var feesTodayUSD = responseJSON.txFees.today * BladeMasterJS.marketPrices.bnb;
+				var feesWeekUSD = responseJSON.txFees.thisWeek * BladeMasterJS.marketPrices.bnb;
+				var feesMonthUSD = responseJSON.txFees.thisMonth * BladeMasterJS.marketPrices.bnb;
+				
+				/* add day fees to UI */
 				document.querySelector('.fee-bnb-today').innerText = parseFloat(responseJSON.txFees.today).toFixed(4) + " BNB "
+				document.querySelector('.fee-usd-today').innerText = " ($"+ parseFloat(feesTodayUSD).toFixed(3) + ") "
+				
+				/* add week fees to UI */
 				document.querySelector('.fee-bnb-week').innerText =  parseFloat(responseJSON.txFees.thisWeek).toFixed(4) + " BNB "
+				document.querySelector('.fee-usd-week').innerText =  " ($"+ parseFloat(feesWeekUSD).toFixed(3) + ") "
+				
+				/* add month fees to UI */
 				document.querySelector('.fee-bnb-month').innerText =  parseFloat(responseJSON.txFees.thisMonth).toFixed(4) + " BNB "
+				document.querySelector('.fee-usd-month').innerText =   " ($"+ parseFloat(feesMonthUSD).toFixed(3) + ") "
 			};
 		
 		};
