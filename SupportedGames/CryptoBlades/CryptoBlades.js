@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 1.0
+ * @ver 1.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -18,28 +18,23 @@
 	character : {},
 	weapon : {},
 	enemies: {},
+	currentFeeScope : "today",
+	intervals : {},
+	listeners : {},
 
-	/**
-	 *
-	 */
-	checkBattleStats: function() {
+	init : function() {
 		
-	
 		this.loadHeader();
-		this.loadListeners();
 		this.loadPrices();
 		this.loadWeb3();
+		
+		this.intervals.listeners = setInterval(function( bm ) {
+			bm.loadListeners();
+		}, 500 , this )
 
-		if(this.checkIfBattlePage()) {
-			this.loadCharacter();
-			this.loadWeapon();
-			this.loadEnemies();
-			this.calculateBattle();
-		}
-		
+	}
 	
-		
-	}, 
+	,
 	
 	loadWeb3 : function() {
 		
@@ -68,7 +63,7 @@
 		var headerElement= document.createElement('div');
 		
 		var htmlTemplate = ''
-		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between"><div>'
+		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between;flex-wrap: wrap;font-size: 12px;"><div>'
 		+ '		BladeMasterJS '
 		
 		+ '		<span class="header-separator"> | </span>'
@@ -86,6 +81,16 @@
 		+ '		<span class="header-separator"> | </span>'
 		
 		+ '		<b>BNB</b>:  <span class="bnb-balance-bnb" style="color:lightblue"></span>  <span class="bnb-balance-usd" style="color:lightgreen"></span>  <span class="bnb-balance-skill" style="color:lightgreen"></span>'
+		
+		+ '		<span class="header-separator"> | </span>'
+		
+		+ '		<b>FEES</b>:  '
+		
+		//+ '		<span class="cycle-fee-scope-back" style=""><img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="width:25px;transform: scaleX(-1);margin-left: 10px;    margin-right: -3px;    margin-left: 2px;"></span>'	
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:lightblue;">Today  <span class="fee-bnb-today" style="color:lightblue"></span></span>'
+		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:lightblue;display:none;">Week <span class="fee-bnb-week" style="color:lightblue"></span></span>'
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:lightblue;display:none">Month <span class="fee-bnb-month" style="color:lightblue"></span></span> '
+		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
 		
 		+ '     <span class="header-separator"> | </span>'
 		
@@ -106,12 +111,12 @@
 	loadListeners : function() {
 		
 		/* make sure element exitst before adding listener */
-		if (document.querySelector('.bnb-tip')) {
-			
+		if (document.querySelector('.bnb-tip') && !BladeMasterJS.listeners.bnbTip) {
 			/* listen for TIP BNB event */
 			document.querySelector('.bnb-tip').addEventListener('click', function() {
-			
-				  var transactionHash = window.ethereum.request({
+				BladeMasterJS.listeners.bnbTip = true;
+				
+				var transactionHash = window.ethereum.request({
 				    method: 'eth_sendTransaction',
 				    params: [
 				      {
@@ -122,16 +127,83 @@
 				    ],
 				  });
 			} , {once :true} )
+		}
+		
+		/* make sure element exitst before adding listener */
+		if (document.querySelector('.skill-tip') && !BladeMasterJS.listeners.skillTip) {
+
+			BladeMasterJS.listeners.skillTip = true;
+				
+			/* listen for TIP SKILL event */
+			document.querySelector('.skill-tip').addEventListener('click', function() {
+				
+			})
+			
+		}
+		
+		
+		/* make sure element exitst before adding listener */
+		if (document.querySelector('.cycle-fee-scope-back') && !BladeMasterJS.listeners.feeScopeBack) {
+			
+			BladeMasterJS.listeners.feeScopeBack = true;
+				
+			
+			/* listen for TIP SKILL event */
+			document.querySelector('.cycle-fee-scope-back').addEventListener('click', function() {
+			
+				document.querySelectorAll(".fee-bnb").forEach( function(feeContainer) {
+					feeContainer.style.display = "none";
+				})
+						
+				switch(BladeMasterJS.currentFeeScope) {
+					case "today":
+						BladeMasterJS.currentFeeScope = "month";
+						break;
+					case "week":
+						BladeMasterJS.currentFeeScope = "today";
+						break;
+					case "month":
+						BladeMasterJS.currentFeeScope = "week";
+						break;	
+				}
+				
+				console.log("BladeMasterJS.currentFeeScope back")
+				console.log(BladeMasterJS.currentFeeScope);
+				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
+			})
 			
 		}
 		
 		/* make sure element exitst before adding listener */
-		if (document.querySelector('.skill-tip')) {
+		if (document.querySelector('.cycle-fee-scope-forward')  && !BladeMasterJS.listeners.feeScopeForward) {
+			
+			
+			BladeMasterJS.listeners.feeScopeForward = true;
 			
 			/* listen for TIP SKILL event */
-			document.querySelector('.skill-tip').addEventListener('click', function() {
+			document.querySelector('.cycle-fee-scope-forward').addEventListener('click', function() {
+				
+				document.querySelectorAll(".fee-bnb").forEach( function(feeContainer) {
+					feeContainer.style.display = "none";
+				})
+						
+				switch(BladeMasterJS.currentFeeScope) {
+					case "today":
+						BladeMasterJS.currentFeeScope = "week";
+						break;
+					case "week":
+						BladeMasterJS.currentFeeScope = "month";
+						break;
+					case "month":
+						BladeMasterJS.currentFeeScope = "today";
+						break;	
+				}
+				
+				console.log("BladeMasterJS.currentFeeScope forward")
+				console.log(BladeMasterJS.currentFeeScope);
+				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
 			
-			} , {once :true})
+			} )
 			
 		}
 		
@@ -144,11 +216,39 @@
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
+					console.log("mouseenter")
+					console.log(BladeMasterJS.intervals.battle)
+					
+					BladeMasterJS.checkIfBattlePage();
 					BladeMasterJS.loadCharacter();
 					BladeMasterJS.loadWeapon();
 					BladeMasterJS.loadEnemies();
 					BladeMasterJS.calculateBattle();
+					
+					if (BladeMasterJS.intervals.battle) {
+						return;
+					}
+					
+					console.log("set BladeMasterJS.intervals.battle");
+					BladeMasterJS.intervals.battle = setInterval(function() {
+						console.log("running Interval");
+						BladeMasterJS.loadCharacter();
+						BladeMasterJS.loadWeapon();
+						BladeMasterJS.loadEnemies();
+						BladeMasterJS.calculateBattle();
+					} , 500 );
+				
+				
 			} , {once :true} )
+			
+			/* make sure that manual weapon mouseovers always renews the battlestats */
+			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
+					console.log("mouseleave")
+					clearInterval(BladeMasterJS.intervals.battle)
+					BladeMasterJS.intervals.battle = 0;
+			} , {once :true} )
+			
+			
 		}
 		
 		
@@ -210,9 +310,11 @@
 				
 			var params = {
 	            ethAddress: window.ethereum.selectedAddress,
+	            clientDateTime: new Date().getTime(),
+	            clientTimeZoneOffset: new Date().getTimezoneOffset(),
 	        }
 	        
-	        apiURL = new URL("https://bscscan-api.vercel.app/api/get-balance");
+	        apiURL = new URL("https://bscscan-api.vercel.app/api/gamestats");
 	        
 	        for (const key in params ) {
 	        	apiURL.searchParams.append(key , params[key]);
@@ -239,6 +341,9 @@
 				document.querySelector('.bnb-balance-bnb').innerText =  BladeMasterJS.balances.bnb + " BNB  "
 				document.querySelector('.bnb-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_bnb + ") "
 				document.querySelector('.bnb-balance-skill').innerText = "(" + BladeMasterJS.balances.skill_bnb + " SKILL) "
+				document.querySelector('.fee-bnb-today').innerText = parseFloat(responseJSON.txFees.today).toFixed(4) + " BNB "
+				document.querySelector('.fee-bnb-week').innerText =  parseFloat(responseJSON.txFees.thisWeek).toFixed(4) + " BNB "
+				document.querySelector('.fee-bnb-month').innerText =  parseFloat(responseJSON.txFees.thisMonth).toFixed(4) + " BNB "
 			};
 		
 		};
@@ -255,6 +360,7 @@
 	 *
 	 */
 	checkIfBattlePage : function() {
+		
 		var currentPage = window.location.href.replace(window.location.origin + '/#/' , '');
 		
 		var isCombatPage = true;
@@ -267,9 +373,15 @@
 			isCombatPage = false;
 		}
 		
+		
+		
 		if (isCombatPage) {
+			
+			console.log("isCombatPage")
+			
 			document.querySelectorAll('.victory-chance').forEach(function( box ) {
 				box.style.position = "relative"
+				box.style.marginBottom = "-44px;"
 			});
 		}
 		
@@ -344,8 +456,11 @@
 	
 	,
 	
+	/**
+	 * 
+	 */ 
 	getWeaponAttributes : function( name ) {
-		
+		console.log('getWeaponAttributes')
 		/* set defaults */
 		this.weapon.stat = []; 
 		this.weapon.bonusPower = 0; 
@@ -366,7 +481,9 @@
 		} 
 		
 		/* if no weapon tooltip is detected then bail */
-		if(!document.querySelector('.tooltip-inner')) {
+		var toolTipInner = document.querySelector('.tooltip-inner');
+		if(!toolTipInner || !toolTipInner.innerText) {
+			console.log("return because no tooltip")
 			return;
 		}
 		
@@ -375,18 +492,18 @@
 			//console.log(element.innerText);
 		//})
 
-		var statsRaw = document.querySelector('.tooltip-inner').innerText;
+		this.weapon.statsRaw = toolTipInner.innerText;
 		
 		/* parse raw text by new line */
-		var statsParsed = statsRaw.split(/\r?\n/);
-		//console.log(statsParsed);
+		this.weapon.statsParsed = this.weapon.statsRaw.split(/\r?\n/);
+		console.log(this.weapon.statsParsed);
 		
-		if (statsParsed.length < 2 ) {
+		if (this.weapon.statsParsed.length < 1 ) {
 			return;
 		}
 
 		var count = 1;
-		for ( lineItem of statsParsed ) {
+		for ( lineItem of this.weapon.statsParsed ) {
 			//console.log(lineItem);
 			var traitParts = lineItem.split(":")
 			
@@ -397,6 +514,8 @@
 			if (!traitParts[1].match(/\d+/)) {
 				continue; 
 			}
+			
+			console.log(traitParts[0]);
 			
 			switch (traitParts[0]) {
 				case "★":
@@ -419,15 +538,20 @@
 					this.weapon.stat[count].element = this.getElementCode("lightning");
 					break;
 				case "DEX":
-					this.weapon.stat[count].element = this.getElementCode("lightning");
+					this.weapon.stat[count].element = this.getElementCode("earth");
 					break;
 				case "PWR":
+					this.weapon.stat[count].element = this.getElementCode("power");
+					break;
 				case "Bonus power":
 					this.weapon.bonusPower = this.weapon.bonusPower +  parseInt(traitParts[1].match(/\d+/).pop().trim());
+					console.log(this.weapon.bonusPower);
 					continue;
 					break;
 					
 			}
+			
+			console.log(parseInt(traitParts[1].match(/\d+/).pop().trim()));
 			
 			BladeMasterJS.weapon.stat[count].power = parseInt(traitParts[1].match(/\d+/).pop().trim());
 			
@@ -473,10 +597,14 @@
 	 */
 	calculateBattle : function() {
 		
+		
+		console.log("calculateBattle")
+		console.log(BladeMasterJS.weapon)
+		 	
+		
 	      /* if no weapon tooltip is detected then bail */
-		if(!this.weapon.stat[1].power) {
-			//console.log('BladeMasterJS: Bail on battle calcutlation')
-			//console.log('"no such thing as a powerless blade"')
+		if(!this.weapon.stat[1].power && !this.weapon.bonusPower) {
+			console.log('"no such thing as a powerless blade"')
 			return;
 		}
 		
@@ -485,7 +613,6 @@
 			return;
 		}
 		
-		 	
 	 	function t(t, a, e) {
 	        let i = 1;
 	        var r, n;
@@ -550,16 +677,10 @@
 setTimeout(function() {
 	/* annouce to console that BladeMasterJS is loaded */
 	console.log('BladeMasterJS loaded');
-	
-	setInterval(function() {
-		
-		/* Start Routine Checks */
-		BladeMasterJS.checkBattleStats();
-		
-	} , 1000 );
+
 	
 	/* prevent delay on first run */
-	BladeMasterJS.checkBattleStats();
+	BladeMasterJS.init();
 	
 	
 } , 2000 )

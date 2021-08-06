@@ -133,12 +133,12 @@
 		request.send(apiRequestData);
 		
 		request.onload = () => {
-		    console.log(request);
+		    
 		    
 		    if (request.status === 200) {
-		      console.log(JSON.parse(request.response));
+		      
 		    } else {
-		      console.log(`error ${request.status} ${request.statusText}`);
+		      
 		    }
 		    
 		};
@@ -169,7 +169,7 @@ setTimeout(function() {
 	DungeonMasterJS.init();
 	
 	/* annouce to console that DungeonMasterJS is loaded */
-	console.log('DungeonMasterJS loaded');
+	
 } , 2000 )
 
 
