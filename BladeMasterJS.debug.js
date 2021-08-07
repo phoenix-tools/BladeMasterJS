@@ -28,9 +28,9 @@
 		this.loadHeader();
 		this.loadWeb3();
 		
-		setTimeout(function() {
-			this.loadPrices();
-		} , 800 );
+		setTimeout(function(bm) {
+			bm.loadPrices();
+		} , 600 , this );
 		
 		this.intervals.listeners = setInterval(function( bm ) {
 			bm.loadListeners();
@@ -757,3 +757,6 @@ setTimeout(function() {
 	
 	
 } , 2000 )
+
+
+
