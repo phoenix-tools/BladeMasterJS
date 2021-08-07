@@ -13,8 +13,8 @@ To begin with just to assist self, then later, released for free publicly or sol
 Install a Chrome extension that will allow custom JS & CSS codefor websites. I recommend this extension but if anyone knows better ones I'm happy to add them to the list:
 https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
 
-Access this file and view the raw version of the code. Copy it and paste it into your Chrome extension's custom JS area:
-https://raw.githubusercontent.com/phoenix-tools/BladeMasterJS/master/BladeMasterJS.js?token=AAPI2H5MWNLI4WPXLXXAVTTBBM2B4
+Access this file and view the raw version of the code:
+https://github.com/phoenix-tools/BladeMasterJS/blob/master/BladeMasterJS.js
 
 ![image](https://user-images.githubusercontent.com/2002207/127751640-db633258-a0f3-4c78-82d5-8c479f67ded1.png)
 
