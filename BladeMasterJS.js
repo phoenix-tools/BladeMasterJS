@@ -24,14 +24,212 @@
 
 	init : function() {
 		
+		this.loadMetaMaskListers();
 		this.loadHeader();
-		this.loadPrices();
 		this.loadWeb3();
+		
+		setTimeout(function() {
+			this.loadPrices();
+		} , 800 );
 		
 		this.intervals.listeners = setInterval(function( bm ) {
 			bm.loadListeners();
 		}, 500 , this )
+		
+	}
+	
+	,
+	
+	destroyCurrentInstance : function() {
+		
+		/* remove header */
+		document.querySelector('.BladeMasterJS').parentNode.removeChild(document.querySelector('.BladeMasterJS'));
+			
+		/* destroy all current intervals */
+		for (key in BladeMasterJS.intervals) {
+			clearInterval(BladeMasterJS.intervals[key])
+		}
+		
+		/* set select BladeMasterJS data back to default */
+		this.balances = {}
+		this.marketPrices = {}
+		this.character = {}
+		this.weapon = {}
+		this.enemies = {}
+		this.currentFeeScope = "today"
+		this.intervals = {}
+		this.listeners = {}
+		
+		
+	}
+	
+	,
+	
+	loadMetaMaskListers : function() {
+		
+		/* on acount change */
+		window.ethereum.on('accountsChanged', function (accounts) {
 
+			
+			/* Destroy BladeMaserJS instance */
+			BladeMasterJS.destroyCurrentInstance()
+			
+			/* Rebuild BladeMasterJS instance */
+			setTimeout(function() {
+				BladeMasterJS.init();
+			}, 1000 )
+			
+		})
+	}
+	
+	,
+	
+	loadListeners : function() {
+		
+		/**
+		 *Listen for BNB tip 
+		 */
+		if (document.querySelector('.bnb-tip') && !BladeMasterJS.listeners.bnbTip) {
+			/* listen for TIP BNB event */
+			document.querySelector('.bnb-tip').addEventListener('click', function() {
+				BladeMasterJS.listeners.bnbTip = true;
+				
+				var transactionHash = window.ethereum.request({
+				    method: 'eth_sendTransaction',
+				    params: [
+				      {
+				        to: '0x2D6371DB3C7f3B1D44A7613e5Dc9dd49C740eC2A',
+				        from: window.ethereum.selectedAddress,
+				        value: Web3.utils.toHex(Web3.utils.toWei("0.01")),
+				      },
+				    ],
+				  });
+			} , {once :true} )
+		}
+		
+		/**
+		 * Listen for SKILL tip (not active at the moment)
+		 */ 
+		if (document.querySelector('.skill-tip') && !BladeMasterJS.listeners.skillTip) {
+
+			BladeMasterJS.listeners.skillTip = true;
+				
+			/* listen for TIP SKILL event */
+			document.querySelector('.skill-tip').addEventListener('click', function() {
+				
+			})
+			
+		}
+		
+		
+		/**
+		 * Listen for fee range cycle clicks 
+		 */
+		if (document.querySelector('.cycle-fee-scope-forward')  && !BladeMasterJS.listeners.feeScopeForward) {
+			
+			
+			BladeMasterJS.listeners.feeScopeForward = true;
+			
+			/* listen for TIP SKILL event */
+			document.querySelector('.cycle-fee-scope-forward').addEventListener('click', function() {
+				
+				document.querySelectorAll(".fee-bnb").forEach( function(feeContainer) {
+					feeContainer.style.display = "none";
+				})
+						
+				switch(BladeMasterJS.currentFeeScope) {
+					case "today":
+						BladeMasterJS.currentFeeScope = "week";
+						break;
+					case "week":
+						BladeMasterJS.currentFeeScope = "month";
+						break;
+					case "month":
+						BladeMasterJS.currentFeeScope = "today";
+						break;	
+				}
+				
+				
+				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
+			
+			} )
+			
+			
+			
+		}
+		
+		/**
+		 * listen for battle results 
+		 */
+		if (!BladeMasterJS.listeners.battleResults && !document.querySelector('#fightResultsModal') ) {
+			
+			BladeMasterJS.listeners.battleResults = true;
+			
+			this.intervals.battleResults = setInterval(function() {
+				
+				{
+					return;
+				}
+				
+				
+				
+				/* Destroy BladeMaserJS instance */
+				BladeMasterJS.destroyCurrentInstance()
+	
+				/* Rebuild BladeMasterJS instance */
+				setTimeout(function() {
+					BladeMasterJS.init();
+				}, 1000 )
+				
+				
+			}, 500  );
+			
+		}
+			
+	
+		
+		/**
+		 * Listen for mouse hovers over weapon in battle mode
+		 */
+		if (document.querySelector('.weapon-icon')) {
+			
+			/* make sure that manual weapon mouseovers always renews the battlestats */
+			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
+					
+					
+					
+					BladeMasterJS.checkIfBattlePage();
+					BladeMasterJS.loadCharacter();
+					BladeMasterJS.loadWeapon();
+					BladeMasterJS.loadEnemies();
+					BladeMasterJS.calculateBattle();
+					
+					if (BladeMasterJS.intervals.calculateBattle) {
+						return;
+					}
+					
+					
+					BladeMasterJS.intervals.calculateBattle = setInterval(function() {
+						
+						BladeMasterJS.loadCharacter();
+						BladeMasterJS.loadWeapon();
+						BladeMasterJS.loadEnemies();
+						BladeMasterJS.calculateBattle();
+					} , 500 );
+				
+				
+			} , {once :true} )
+			
+			/* make sure that manual weapon mouseovers always renews the battlestats */
+			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
+					BladeMasterJS.intervals.calculateBattle = 0;
+			} , {once :true} )
+			
+			
+		}
+		
+		
+		
 	}
 	
 	,
@@ -88,9 +286,11 @@
 		
 		//+ '		<span class="cycle-fee-scope-back" style=""><img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="width:25px;transform: scaleX(-1);margin-left: 10px;    margin-right: -3px;    margin-left: 2px;"></span>'
 		
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> LAST 24 HOURS </span>'
-		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> LAST 7 DAYS </span>'
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span> LAST 31 DAYS </span> '
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 24 HOURS</span> </span>'
+		
+		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 7 DAYS</span> </span>'
+		
+		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span><span style="font-size: 10px;margin-left: 3px;"> LAST 31 DAYS</span> </span> '
 		
 		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
 		
@@ -109,152 +309,6 @@
 	
 	,
 	
-	
-	loadListeners : function() {
-		
-		/* make sure element exitst before adding listener */
-		if (document.querySelector('.bnb-tip') && !BladeMasterJS.listeners.bnbTip) {
-			/* listen for TIP BNB event */
-			document.querySelector('.bnb-tip').addEventListener('click', function() {
-				BladeMasterJS.listeners.bnbTip = true;
-				
-				var transactionHash = window.ethereum.request({
-				    method: 'eth_sendTransaction',
-				    params: [
-				      {
-				        to: '0x2D6371DB3C7f3B1D44A7613e5Dc9dd49C740eC2A',
-				        from: window.ethereum.selectedAddress,
-				        value: Web3.utils.toHex(Web3.utils.toWei("0.01")),
-				      },
-				    ],
-				  });
-			} , {once :true} )
-		}
-		
-		/* make sure element exitst before adding listener */
-		if (document.querySelector('.skill-tip') && !BladeMasterJS.listeners.skillTip) {
-
-			BladeMasterJS.listeners.skillTip = true;
-				
-			/* listen for TIP SKILL event */
-			document.querySelector('.skill-tip').addEventListener('click', function() {
-				
-			})
-			
-		}
-		
-		
-		/* make sure element exitst before adding listener */
-		if (document.querySelector('.cycle-fee-scope-back') && !BladeMasterJS.listeners.feeScopeBack) {
-			
-			BladeMasterJS.listeners.feeScopeBack = true;
-				
-			
-			/* listen for TIP SKILL event */
-			document.querySelector('.cycle-fee-scope-back').addEventListener('click', function() {
-			
-				document.querySelectorAll(".fee-bnb").forEach( function(feeContainer) {
-					feeContainer.style.display = "none";
-				})
-						
-				switch(BladeMasterJS.currentFeeScope) {
-					case "today":
-						BladeMasterJS.currentFeeScope = "month";
-						break;
-					case "week":
-						BladeMasterJS.currentFeeScope = "today";
-						break;
-					case "month":
-						BladeMasterJS.currentFeeScope = "week";
-						break;	
-				}
-				
-				
-				
-				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
-			})
-			
-		}
-		
-		/* make sure element exitst before adding listener */
-		if (document.querySelector('.cycle-fee-scope-forward')  && !BladeMasterJS.listeners.feeScopeForward) {
-			
-			
-			BladeMasterJS.listeners.feeScopeForward = true;
-			
-			/* listen for TIP SKILL event */
-			document.querySelector('.cycle-fee-scope-forward').addEventListener('click', function() {
-				
-				document.querySelectorAll(".fee-bnb").forEach( function(feeContainer) {
-					feeContainer.style.display = "none";
-				})
-						
-				switch(BladeMasterJS.currentFeeScope) {
-					case "today":
-						BladeMasterJS.currentFeeScope = "week";
-						break;
-					case "week":
-						BladeMasterJS.currentFeeScope = "month";
-						break;
-					case "month":
-						BladeMasterJS.currentFeeScope = "today";
-						break;	
-				}
-				
-				
-				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
-			
-			} )
-			
-		}
-		
-		
-	
-		
-		/* make sure element exitst before adding listener */
-		
-		if (document.querySelector('.weapon-icon')) {
-			
-			/* make sure that manual weapon mouseovers always renews the battlestats */
-			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
-					
-					
-					
-					BladeMasterJS.checkIfBattlePage();
-					BladeMasterJS.loadCharacter();
-					BladeMasterJS.loadWeapon();
-					BladeMasterJS.loadEnemies();
-					BladeMasterJS.calculateBattle();
-					
-					if (BladeMasterJS.intervals.battle) {
-						return;
-					}
-					
-					
-					BladeMasterJS.intervals.battle = setInterval(function() {
-						
-						BladeMasterJS.loadCharacter();
-						BladeMasterJS.loadWeapon();
-						BladeMasterJS.loadEnemies();
-						BladeMasterJS.calculateBattle();
-					} , 500 );
-				
-				
-			} , {once :true} )
-			
-			/* make sure that manual weapon mouseovers always renews the battlestats */
-			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
-					BladeMasterJS.intervals.battle = 0;
-			} , {once :true} )
-			
-			
-		}
-		
-		
-		
-	}
-	
-	,
 	
 	loadPrices : function() {
 		
@@ -300,8 +354,8 @@
 			document.querySelector('.bnb-price').innerText = "" + BladeMasterJS.marketPrices.bnb +" "
 			document.querySelector('.skill-price').innerText = "" + BladeMasterJS.marketPrices.skill + " "
 			document.querySelector('.skill-balance-skill').innerText =  BladeMasterJS.balances.skill + " SKILL  "
-			document.querySelector('.skill-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_skill + ") "
-			document.querySelector('.skill-balance-bnb').innerText = "(" + BladeMasterJS.balances.bnb_skill + " BNB) "
+			document.querySelector('.skill-balance-usd').innerText = " +$" + BladeMasterJS.balances.usd_skill + " "
+			document.querySelector('.skill-balance-bnb').innerText = " +" + BladeMasterJS.balances.bnb_skill + "BNB "
 			
 			
 			/* load BNB Balance and Calculate Transactions from Custom API */
@@ -338,8 +392,8 @@
 				
 				/* set these prices into the header */
 				document.querySelector('.bnb-balance-bnb').innerText =  BladeMasterJS.balances.bnb + " BNB  "
-				document.querySelector('.bnb-balance-usd').innerText = "($" + BladeMasterJS.balances.usd_bnb + ") "
-				document.querySelector('.bnb-balance-skill').innerText = "(" + BladeMasterJS.balances.skill_bnb + " SKILL) "
+				document.querySelector('.bnb-balance-usd').innerText = " +$" + BladeMasterJS.balances.usd_bnb + " "
+				document.querySelector('.bnb-balance-skill').innerText = " +" + BladeMasterJS.balances.skill_bnb + "SKILL "
 				
 				/* calculate fee bnb cost in USD */
 				var feesTodayUSD = responseJSON.txFees.today * BladeMasterJS.marketPrices.bnb;
@@ -697,6 +751,3 @@ setTimeout(function() {
 	
 	
 } , 2000 )
-
-
-
