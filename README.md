@@ -1,5 +1,5 @@
 # BladeMasterJS
-[![Discord](https://img.shields.io/discord/870816354612170842.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2?style=for-the-badge)](https://discord.gg/6AjVj3s9aN)
+[![Discord](https://img.shields.io/discord/870816354612170842?label=Discord&logo=Discord&logoColor=%23fff&style=for-the-badge)](https://discord.gg/6AjVj3s9aN)
 [![YouTube](https://img.shields.io/youtube/channel/views/UCQD9zAJeF1q4r8haWkia0rA?style=for-the-badge)](https://www.youtube.com/channel/UCQD9zAJeF1q4r8haWkia0rA)
 
 
