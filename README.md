@@ -1,6 +1,8 @@
-[![Discord](https://img.shields.io/discord/870816354612170842.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/6AjVj3s9aN)
-
 # BladeMasterJS
+[![Discord](https://img.shields.io/discord/870816354612170842.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2?style=for-the-badge)](https://discord.gg/6AjVj3s9aN)
+[![YouTube](https://img.shields.io/youtube/channel/views/UCQD9zAJeF1q4r8haWkia0rA?style=for-the-badge)](https://www.youtube.com/channel/UCQD9zAJeF1q4r8haWkia0rA)
+
+
 A JS class that enhances the CryptoBlades.io UX experience while offering an edge in battle. BladeMasterJS is open source, but access to the API requires a `.01` BNB tip to the development team every 40 days.  
 
 
