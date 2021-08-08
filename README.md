@@ -43,17 +43,3 @@ And that's it! The next time you access https://app.cryptoblades.io/#/ the JavaS
 If you have any trouble installing please reach out in the Discord private room for BladeMasters and I'll help asap.
 
 Happy Forging! 
-
-## Discord Access
-
-* Better win history management
-* Retrieve staked SKILL value
-
-## Development
-
-https://github.com/phoenix-tools/BladeMasterJS
-
-## Resources
-
-* How to calculate?
-* Local storage for saving characters and weapons
