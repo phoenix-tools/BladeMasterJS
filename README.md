@@ -35,7 +35,10 @@ https://github.com/phoenix-tools/BladeMasterJS/blob/master/BladeMasterJS.js
 Navigate to CryptoBlades.io
 
 Open the newly installed Chrome Extension's Custom CSS and JS extension and create a new profile
+
+<img src="https://user-images.githubusercontent.com/2002207/127751640-db633258-a0f3-4c78-82d5-8c479f67ded1.png" width="500">
 ![image](https://user-images.githubusercontent.com/2002207/127751640-db633258-a0f3-4c78-82d5-8c479f67ded1.png | width=500)
+
 ![image](https://user-images.githubusercontent.com/2002207/127751659-cd4857c3-1cb8-4648-872b-f838b1aab974.png | width=500)
 
 Add the raw code that was copied earlier into the JavaScript panel, and save the profile.
