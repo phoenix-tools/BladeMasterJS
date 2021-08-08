@@ -1,3 +1,5 @@
+[![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/6AjVj3s9aN)
+
 # BladeMasterJS
 A JS class that enhances the CryptoBlades.io UX experience while offering an edge in battle. BladeMasterJS is open source, but access to the API requires a `.01` BNB tip to the development team every 40 days.  
 
@@ -35,17 +37,7 @@ If you have any trouble installing please reach out in the Discord private room 
 
 Happy Forging! 
 
-
-## Features
-
-* Load Weapon
-* Load Character
-* Auto-calculate win % according to loaded screen, loaded profile, loaded character
-* Retrieve BNB, SKILL market price
-* Calculate wallet SKILL USD value
-* Tip DEV .01BNB
-
-## Stretch Goals
+## Discord Access
 
 * Better win history management
 * Retrieve staked SKILL value
