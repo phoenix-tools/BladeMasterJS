@@ -14,9 +14,14 @@ A JS class that enhances the CryptoBlades.io UX experience while offering an edg
 * Shows user BNB fee expenditure for the Cryptoblades game in the following ranges: 24 hours, 7 days, 31 days.
 * Adds a battle calculator overlay that shows win percentage (must hover mouse over weapon to begin calculations)
 
-![image](https://user-images.githubusercontent.com/2002207/128645628-1c52d3e0-e2ad-4fd8-891a-c1f1b273fc90.png)
-![image](https://user-images.githubusercontent.com/2002207/128645632-2cc81cef-46f0-4f1a-8971-3af18bd663f2.png)
+## Feature Screenshots
 
+### BladeMasterJS Header
+![image](https://user-images.githubusercontent.com/2002207/128645628-1c52d3e0-e2ad-4fd8-891a-c1f1b273fc90.png)
+
+
+### Convientent Battle Calculator
+![image](https://user-images.githubusercontent.com/2002207/128645632-2cc81cef-46f0-4f1a-8971-3af18bd663f2.png)
 
 
 ## How to Install in Chrome
