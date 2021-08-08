@@ -8,9 +8,9 @@ A JS class that enhances the CryptoBlades.io UX experience while offering an edg
 
 ## Features
 
-* Promenantly displays the USD market prices of BNB and SKILL
-* Promenantly displays the current user's SKILL balance as well as its converted values in USD and BNB
-* Promentantly displays the current user's BNB balance as well as its converted values in USD and SKILL
+* Prominently displays the USD market prices of BNB and SKILL
+* Prominently displays the current user's SKILL balance as well as its converted values in USD and BNB
+* Prominently displays the current user's BNB balance as well as its converted values in USD and SKILL
 * Shows user BNB fee expenditure for the Cryptoblades game in the following ranges: 24 hours, 7 days, 31 days.
 * Adds a battle calculator overlay that shows win percentage (must hover mouse over weapon to begin calculations)
 
