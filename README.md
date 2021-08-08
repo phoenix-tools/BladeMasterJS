@@ -32,7 +32,7 @@ https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgm
 Access this file and view the raw version of the code:
 https://github.com/phoenix-tools/BladeMasterJS/blob/master/BladeMasterJS.js
 
-Navigate to CryptoBlades.io
+Navigate to https://app.cryptoblades.io/#/
 
 Open the newly installed Chrome Extension's Custom CSS and JS extension and create a new profile
 
