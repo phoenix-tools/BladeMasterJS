@@ -37,7 +37,7 @@ Navigate to CryptoBlades.io
 Open the newly installed Chrome Extension's Custom CSS and JS extension and create a new profile
 
 <img src="https://user-images.githubusercontent.com/2002207/127751640-db633258-a0f3-4c78-82d5-8c479f67ded1.png" width="800">
-<img src="https://user-images.githubusercontent.com/2002207/127751659-cd4857c3-1cb8-4648-872b-f838b1aab974.png" width="800">
+<img src="https://user-images.githubusercontent.com/2002207/128646467-657c566b-2abf-4257-a007-4046923ae12b.png" width="800">
 
 Add the raw code that was copied earlier into the JavaScript panel, and save the profile.
 <img src="https://user-images.githubusercontent.com/2002207/127751690-ab1a8907-428f-47e5-af48-03c2ba43f6a8.png" width="800">
