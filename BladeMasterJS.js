@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 1.2.1
+ * @ver 2.0.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -28,9 +28,12 @@
 		this.loadHeader();
 		this.loadWeb3();
 		
-		setTimeout(function() {
-			this.loadPrices();
-		} , 800 );
+		setTimeout(function(bm) {
+			if (!window.ethereum.selectedAddress) {
+				return true;
+			}
+			bm.loadPrices();
+		} , 600 , this );
 		
 		this.intervals.listeners = setInterval(function( bm ) {
 			bm.loadListeners();
@@ -261,7 +264,9 @@
 		var headerElement= document.createElement('div');
 		
 		var htmlTemplate = ''
-		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between;flex-wrap: wrap;font-size: 12px;"><div>'
+		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between;flex-wrap: wrap;font-size: 12px;">'
+	
+		+ '<div class="bm-col-1">'
 		+ '		BladeMasterJS '
 		
 		+ '		<span class="header-separator"> | </span>'
@@ -272,32 +277,45 @@
 		
 		+ '		<b>$SKILL</b> <span class="skill-price" title="Market price of SKILL in USD"></span>'
 		
-		+ '	</div><div>'
+		+ '	</div>'
 		
-		+ '		<b>SKILL</b>:  <span class="skill-balance-skill" style="color:gold"></span>  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>'
+		+ ' <div  class="bm-col-2">'
 		
-		+ '		<span class="header-separator"> | </span>'
+		+ '		<div class="skill-ballance-container" style="display:inline-block;">'
+		+ '			<b>SKILL</b>:  <span class="skill-balance-skill" style="color:gold"></span>  <span class="skill-balance-usd" style="color:lightgreen"></span>  <span class="skill-balance-bnb" style="color:lightgreen"></span>'
+		+ '			<span class="header-separator"> | </span>'
+		+ '     </div>'
 		
-		+ '		<b>BNB</b>:  <span class="bnb-balance-bnb" style="color:lightblue"></span>  <span class="bnb-balance-usd" style="color:lightgreen"></span>  <span class="bnb-balance-skill" style="color:lightgreen"></span>'
+
+		+ '		<div class="bnb-ballance-container" style="display:inline-block;">'
+		+ '			<b>BNB</b>:  <span class="bnb-balance-bnb" style="color:lightblue"></span>  <span class="bnb-balance-usd" style="color:lightgreen"></span>  <span class="bnb-balance-skill" style="color:lightgreen"></span>'
 		
-		+ '		<span class="header-separator"> | </span>'
+		+ '			<span class="header-separator"> | </span>'
+		+ '     </div>'
 		
-		+ '		<b>FEES</b>:  '
+		
+		+ '		<div class="fees-container" style="display:inline-block;">'
+		+ '			<b>FEES</b>:  '
 		
 		//+ '		<span class="cycle-fee-scope-back" style=""><img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="width:25px;transform: scaleX(-1);margin-left: 10px;    margin-right: -3px;    margin-left: 2px;"></span>'
 		
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 24 HOURS</span> </span>'
+		+ ' 		<span class="fee-label fee-bnb" id="fee-bnb-contatiner-today" style="color:mintcream;"><span class="fee-bnb-today" style="color:lightblue"></span><span class="fee-usd-today" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 24 HOURS</span> </span>'
 		
-		+ '     <span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 7 DAYS</span> </span>'
+		+ '     	<span class="fee-labe fee-bnb" id="fee-bnb-contatiner-week" style="color:mintcream;display:none;"><span class="fee-bnb-week" style="color:lightblue"></span><span class="fee-usd-week" style="color:LIGHTSALMON"></span> <span style="font-size: 10px;margin-left: 3px;">LAST 7 DAYS</span> </span>'
 		
-		+ '     <span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span><span style="font-size: 10px;margin-left: 3px;"> LAST 31 DAYS</span> </span> '
+		+ '     	<span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span><span style="font-size: 10px;margin-left: 3px;"> LAST 31 DAYS</span> </span> '
 		
 		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
 		
 		+ '     <span class="header-separator"> | </span>'
+		+ '		</div>'
 		
+		+ '		<div class="bnb-tip-container" style="display:inline-block;">'
 		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!"><b>TIP <span class="recommended-bnb-tip">.01</span> BNB</b></a>'
-		+ '</div></div>'
+		+ '		</div>';
+		
+		+ '</div>'
+		+ '</div>'
 		+ ' '
 		+ '<style>.header-separator {margin:7px;}</style>'
 		
@@ -340,6 +358,7 @@
 		coingeckoRequest.onload = () => {
 	
 			var responseJSON  = JSON.parse(coingeckoRequest.response);
+			
 
 			BladeMasterJS.marketPrices.bnb = responseJSON[0].current_price;
 			BladeMasterJS.marketPrices.skill = responseJSON[1].current_price;
@@ -362,7 +381,7 @@
 			var bscscanRequest = new XMLHttpRequest();
 				
 			var params = {
-	            ethAddress: window.ethereum.selectedAddress,
+	            ethAddress: window.ethereum.selectedAddress.toLowerCase(),
 	            clientDateTime: new Date().getTime(),
 	            clientTimeZoneOffset: new Date().getTimezoneOffset(),
 	        }
@@ -380,6 +399,17 @@
 			bscscanRequest.onload = () => {
 		
 				var responseJSON  = JSON.parse(bscscanRequest.response);
+				
+				if (!responseJSON.isDono && !responseJSON.isWhiteListed) {
+					document.querySelector('.BladeMasterJS').style.justifyContent = "flex-end";
+					document.querySelector('.bm-col-1').style.width = "90%";
+					
+					document.querySelector('.bm-col-1').innerHTML = '<div class="dono-activate-promot" style="display: contents;padding-right:10px;width:100%;"><marquee>YOOOOO! <b>BladeMasterJS</b> costs <span style="color:gold"><b>.01 BNB</b></span> for every <b>40 days</b> of use. --------  Click the <b>TIP</b> button to the right to activate your copy!  --------  Make sure your <b>MetaMask</b> is set to the <b>Binance Smart Chain</b> before tipping!  -------- There might be a delay between tipping and asset activation depending on the speed of the bscscan.com API. If activation takes longer than an hour then please reach out on our <a href="https://discord.gg/6AjVj3s9aN" target="_blank">Discord</a> for manual assistance :) </marquee></div>';
+					document.querySelector('.skill-ballance-container').parentNode.removeChild(document.querySelector('.skill-ballance-container'))
+					document.querySelector('.bnb-ballance-container').parentNode.removeChild(document.querySelector('.bnb-ballance-container'))
+					document.querySelector('.fees-container').parentNode.removeChild(document.querySelector('.fees-container'))
+					return;
+				}
 				
 				
 				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.inETH).toFixed(4);
@@ -751,3 +781,6 @@ setTimeout(function() {
 	
 	
 } , 2000 )
+
+
+
