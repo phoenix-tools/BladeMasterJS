@@ -47,7 +47,3 @@ Happy Forging!
 
 https://github.com/phoenix-tools/BladeMasterJS
 
-## Resources
-
-* How to calculate?
-* Local storage for saving characters and weapons
