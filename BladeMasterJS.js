@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.0.1
+ * @ver 2.0.2
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -93,6 +93,9 @@
 		 *Listen for BNB tip 
 		 */
 		if (document.querySelector('.bnb-tip') && !BladeMasterJS.listeners.bnbTip) {
+			
+			BladeMasterJS.listeners.bnbTip = true;
+			
 			/* listen for TIP BNB event */
 			document.querySelector('.bnb-tip').addEventListener('click', function() {
 				BladeMasterJS.listeners.bnbTip = true;
@@ -772,9 +775,6 @@
 }
 
 setTimeout(function() {
-	/* annouce to console that BladeMasterJS is loaded */
-	
-
 	
 	/* prevent delay on first run */
 	BladeMasterJS.init();
