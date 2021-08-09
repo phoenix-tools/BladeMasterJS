@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.0.2
+ * @ver 2.0.3
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -173,10 +173,11 @@
 			
 			this.intervals.battleResults = setInterval(function() {
 				
+				if (!document.querySelector('#fightResultsModal'))
 				{
 					return;
 				}
-				
+				console.log("here2")
 				
 				
 				/* Destroy BladeMaserJS instance */
@@ -202,8 +203,6 @@
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
 					
-					
-					
 					BladeMasterJS.checkIfBattlePage();
 					BladeMasterJS.loadCharacter();
 					BladeMasterJS.loadWeapon();
@@ -214,20 +213,22 @@
 						return;
 					}
 					
-					
+					console.log("here2");
 					BladeMasterJS.intervals.calculateBattle = setInterval(function() {
-						
+										console.log("interval run");
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
 						BladeMasterJS.loadEnemies();
 						BladeMasterJS.calculateBattle();
-					} , 500 );
+						
+					} , 700 );
 				
 				
 			} , {once :true} )
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
+					clearInterval(BladeMasterJS.intervals.calculateBattle);
 					BladeMasterJS.intervals.calculateBattle = 0;
 			} , {once :true} )
 			
@@ -476,11 +477,9 @@
 		
 		if (isCombatPage) {
 			
-			
-			
 			document.querySelectorAll('.victory-chance').forEach(function( box ) {
 				box.style.position = "relative"
-				box.style.marginBottom = "-44px;"
+				box.style.marginBottom = "-44px"
 			});
 		}
 		
