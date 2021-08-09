@@ -177,7 +177,6 @@
 				{
 					return;
 				}
-				console.log("here2")
 				
 				
 				/* Destroy BladeMaserJS instance */
@@ -213,9 +212,9 @@
 						return;
 					}
 					
-					console.log("here2");
+
 					BladeMasterJS.intervals.calculateBattle = setInterval(function() {
-										console.log("interval run");
+						
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
 						BladeMasterJS.loadEnemies();
