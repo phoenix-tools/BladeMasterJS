@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.0.1
+ * @ver 2.0.2
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -30,7 +30,6 @@
 		
 		setTimeout(function(bm) {
 			if (!window.ethereum.selectedAddress) {
-				console.log("Not connected to MetaMask")
 				return true;
 			}
 			bm.loadPrices();
@@ -94,6 +93,9 @@
 		 *Listen for BNB tip 
 		 */
 		if (document.querySelector('.bnb-tip') && !BladeMasterJS.listeners.bnbTip) {
+			
+			BladeMasterJS.listeners.bnbTip = true;
+			
 			/* listen for TIP BNB event */
 			document.querySelector('.bnb-tip').addEventListener('click', function() {
 				BladeMasterJS.listeners.bnbTip = true;
@@ -153,8 +155,7 @@
 						break;	
 				}
 				
-				console.log("BladeMasterJS.currentFeeScope forward")
-				console.log(BladeMasterJS.currentFeeScope);
+				
 				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
 			
 			} )
@@ -172,13 +173,11 @@
 			
 			this.intervals.battleResults = setInterval(function() {
 				
-				console.log("checking for battle results")
-				
-				if (!document.querySelector('#fightResultsModal')) {
+				{
 					return;
 				}
 				
-				console.log("results are in");
+				
 				
 				/* Destroy BladeMaserJS instance */
 				BladeMasterJS.destroyCurrentInstance()
@@ -202,8 +201,8 @@
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
-					console.log("mouseenter");
-					console.log(BladeMasterJS.intervals.calculateBattle);
+					
+					
 					
 					BladeMasterJS.checkIfBattlePage();
 					BladeMasterJS.loadCharacter();
@@ -215,9 +214,9 @@
 						return;
 					}
 					
-					console.log("set BladeMasterJS.intervals.calculateBattle");
+					
 					BladeMasterJS.intervals.calculateBattle = setInterval(function() {
-						console.log("running Interval");
+						
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
 						BladeMasterJS.loadEnemies();
@@ -229,8 +228,6 @@
 			
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseleave', function() {
-					console.log("mouseleave")
-					clearInterval(BladeMasterJS.intervals.calculateBattle)
 					BladeMasterJS.intervals.calculateBattle = 0;
 			} , {once :true} )
 			
@@ -417,7 +414,7 @@
 					return;
 				}
 				
-				console.log(responseJSON.balances);
+				
 				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.inETH).toFixed(4);
 				
 				/* figure out dollar balance */
@@ -479,7 +476,7 @@
 		
 		if (isCombatPage) {
 			
-			console.log("isCombatPage");
+			
 			
 			document.querySelectorAll('.victory-chance').forEach(function( box ) {
 				box.style.position = "relative"
@@ -563,7 +560,7 @@
 	 */ 
 	getWeaponAttributes : function( name ) {
 		
-		console.log('getWeaponAttributes');
+		
 		
 		/* set defaults */
 		this.weapon.stat = []; 
@@ -587,20 +584,19 @@
 		/* if no weapon tooltip is detected then bail */
 		var toolTipInner = document.querySelector('.tooltip-inner');
 		if(!toolTipInner || !toolTipInner.innerText) {
-			console.log("return because no tooltip")
 			return;
 		}
 		
 		//var correctToolTip = {};
 		//document.querySelectorAll('.tooltip-inner').forEach(function(element) {
-			//console.log(element.innerText);
+			//
 		//})
 
 		this.weapon.statsRaw = toolTipInner.innerText;
 		
 		/* parse raw text by new line */
 		this.weapon.statsParsed = this.weapon.statsRaw.split(/\r?\n/);
-		console.log(this.weapon.statsParsed);
+		
 		
 		if (this.weapon.statsParsed.length < 1 ) {
 			return;
@@ -608,7 +604,7 @@
 
 		var count = 1;
 		for ( lineItem of this.weapon.statsParsed ) {
-			//console.log(lineItem);
+			//
 			var traitParts = lineItem.split(":")
 			
 			if (typeof(traitParts[1]) == "undefined") {
@@ -619,7 +615,7 @@
 				continue; 
 			}
 			
-			console.log(traitParts[0]);
+			
 			
 			switch (traitParts[0]) {
 				case "★":
@@ -649,13 +645,13 @@
 					break;
 				case "Bonus power":
 					this.weapon.bonusPower = this.weapon.bonusPower +  parseInt(traitParts[1].match(/\d+/).pop().trim());
-					console.log(this.weapon.bonusPower);
+					
 					continue;
 					break;
 					
 			}
 			
-			console.log(parseInt(traitParts[1].match(/\d+/).pop().trim()));
+			
 			
 			BladeMasterJS.weapon.stat[count].power = parseInt(traitParts[1].match(/\d+/).pop().trim());
 			
@@ -687,7 +683,7 @@
 			BladeMasterJS.enemies[count] = {}
 			
 			BladeMasterJS.enemies[count].element = BladeMasterJS.getElementCode(enemy.querySelector('.encounter-element').children[0].className.replace('-icon' , ''));
-			//console.log('count ' + count);
+			//
 			BladeMasterJS.enemies[count].power = parseInt(enemy.querySelector('.encounter-power').innerText.replace(" Power " , "" )); 
 			
 			count++;
@@ -702,13 +698,13 @@
 	calculateBattle : function() {
 		
 		
-		console.log("calculateBattle");
-		console.log(BladeMasterJS.weapon);
+		
+		
 		 	
 		
 	    /* if no weapon tooltip is detected then bail */
 		if(!this.weapon.stat[1].power && !this.weapon.bonusPower) {
-			console.log("no such thing as a powerless blade");
+			
 			return;
 		}
 		
@@ -779,9 +775,6 @@
 }
 
 setTimeout(function() {
-	/* annouce to console that BladeMasterJS is loaded */
-	console.log('BladeMasterJS loaded');
-
 	
 	/* prevent delay on first run */
 	BladeMasterJS.init();
