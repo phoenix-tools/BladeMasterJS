@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.0.3
+ * @ver 2.0.3.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -177,7 +177,6 @@
 				{
 					return;
 				}
-				console.log("here2")
 				
 				
 				/* Destroy BladeMaserJS instance */
@@ -203,19 +202,22 @@
 			/* make sure that manual weapon mouseovers always renews the battlestats */
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
 					
-					BladeMasterJS.checkIfBattlePage();
-					BladeMasterJS.loadCharacter();
-					BladeMasterJS.loadWeapon();
-					BladeMasterJS.loadEnemies();
-					BladeMasterJS.calculateBattle();
+					setTimeout(function() {
+						console.log("first run:")
+						BladeMasterJS.checkIfBattlePage();
+						BladeMasterJS.loadCharacter();
+						BladeMasterJS.loadWeapon();
+						BladeMasterJS.loadEnemies();
+						BladeMasterJS.calculateBattle();
+					}, 300)
 					
 					if (BladeMasterJS.intervals.calculateBattle) {
 						return;
 					}
 					
-					console.log("here2");
+
 					BladeMasterJS.intervals.calculateBattle = setInterval(function() {
-										console.log("interval run");
+						
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
 						BladeMasterJS.loadEnemies();
