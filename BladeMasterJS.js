@@ -3,7 +3,7 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.0.3.1
+ * @ver 2.1.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
@@ -203,6 +203,7 @@
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
 					
 					setTimeout(function() {
+						//console.log("first run:")
 						BladeMasterJS.checkIfBattlePage();
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
@@ -310,19 +311,23 @@
 		
 		+ '     	<span class="fee-label fee-bnb" id="fee-bnb-contatiner-month" style="color:mintcream;display:none"><span class="fee-bnb-month" style="color:lightblue"></span><span class="fee-usd-month" style="color:LIGHTSALMON"></span><span style="font-size: 10px;margin-left: 3px;"> LAST 31 DAYS</span> </span> '
 		
-		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;"></span>'
+		+ '		<span class="cycle-fee-scope-forward" ><img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:25px;margin-left: 3px;    margin-left: -2px;cursor:pointer;"></span>'
 		
 		+ '     <span class="header-separator"> | </span>'
 		+ '		</div>'
 		
-		+ '		<div class="bnb-tip-container" style="display:inline-block;">'
+		+ '		<div class="bnb-tip-container" style="display:none;">'
 		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!"><b>TIP <span class="recommended-bnb-tip">.01</span> BNB</b></a>'
-		+ '		</div>';
+		+ '		</div>'
+		
+		+ '		<div class="bnb-free-trial-counter" style="display:none;" title="Days remaining in the free BladeMasterJS trial.">'
+		+ '     <b> <span class="dono-days-remaining"></span></b>'
+		+ '		</div>'
 		
 		+ '</div>'
 		+ '</div>'
 		+ ' '
-		+ '<style>.header-separator {margin:7px;}</style>'
+		+ '<style>.header-separator {margin:7px;}</style>';
 		
 		headerElement.innerHTML = htmlTemplate;
 		var firstChild = document.body.firstChild;
@@ -389,9 +394,11 @@
 	            ethAddress: window.ethereum.selectedAddress.toLowerCase(),
 	            clientDateTime: new Date().getTime(),
 	            clientTimeZoneOffset: new Date().getTimezoneOffset(),
+	            product: "blademasterjs",
+	            query: ["bnbBalance","txFees"]
 	        }
 	        
-	        apiURL = new URL("https://bscscan-api.vercel.app/api/gamestats");
+	        apiURL = new URL("https://phoenixtools.io/api/gamestats/");
 	        
 	        for (const key in params ) {
 	        	apiURL.searchParams.append(key , params[key]);
@@ -405,19 +412,31 @@
 		
 				var responseJSON  = JSON.parse(bscscanRequest.response);
 				
-				if (!responseJSON.isDono && !responseJSON.isWhiteListed) {
+				if (!responseJSON.dono.isDono && !responseJSON.isWhiteListed && responseJSON.trial.status != "active") {
+					
+					document.querySelector('.bnb-tip-container').style.display = "inline-block";
+					
 					document.querySelector('.BladeMasterJS').style.justifyContent = "flex-end";
 					document.querySelector('.bm-col-1').style.width = "90%";
 					
-					document.querySelector('.bm-col-1').innerHTML = '<div class="dono-activate-promot" style="display: contents;padding-right:10px;width:100%;"><marquee>YOOOOO! <b>BladeMasterJS</b> costs <span style="color:gold"><b>.01 BNB</b></span> for every <b>40 days</b> of use. --------  Click the <b>TIP</b> button to the right to activate your copy!  --------  Make sure your <b>MetaMask</b> is set to the <b>Binance Smart Chain</b> before tipping!  -------- There might be a delay between tipping and asset activation depending on the speed of the bscscan.com API. If activation takes longer than an hour then please reach out on our <a href="https://discord.gg/6AjVj3s9aN" target="_blank">Discord</a> for manual assistance :) </marquee></div>';
+					document.querySelector('.bm-col-1').innerHTML = '<div class="dono-activate-promot" style="display: contents;padding-right:10px;width:100%;"><marquee>YOOOOO! You\'re free 14 day trial has ended! -------- Aw man! -------- <b>BladeMasterJS</b> costs <span style="color:gold"><b>.01 BNB</b></span> for every <b>40 days</b> of use. --------  Click the <b>TIP</b> button to the right to activate your copy!  --------  Make sure your <b>MetaMask</b> is set to the <b>Binance Smart Chain</b> before tipping!  -------- There might be a delay between tipping and asset activation depending on the speed of the bscscan.com API. If activation takes longer than an hour then please reach out on our <a href="https://discord.gg/6AjVj3s9aN" target="_blank">Discord</a> for manual assistance :) </marquee></div>';
 					document.querySelector('.skill-ballance-container').parentNode.removeChild(document.querySelector('.skill-ballance-container'))
 					document.querySelector('.bnb-ballance-container').parentNode.removeChild(document.querySelector('.bnb-ballance-container'))
 					document.querySelector('.fees-container').parentNode.removeChild(document.querySelector('.fees-container'))
 					return;
 				}
 				
+				else if (responseJSON.dono.isDono || responseJSON.isWhiteListed) {
+					document.querySelector('.bnb-tip').title = "You have " + responseJSON.dono.daysRemaining + " days until the next donation.";
+					document.querySelector('.bnb-tip-container').style.display = "inline-block";
+				}	
+				else if (responseJSON.trial.status == "active") {
+					document.querySelector('.bnb-free-trial-counter').style.display = "inline-block";
+					document.querySelector('.dono-days-remaining').innerText = responseJSON.trial.daysRemaining + " Days Remain";
+				}
 				
-				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.inETH).toFixed(4);
+				
+				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.bnb.inETH).toFixed(4);
 				
 				/* figure out dollar balance */
 				BladeMasterJS.balances.usd_bnb =  ( parseFloat(BladeMasterJS.balances.bnb , 8 ) * parseFloat(BladeMasterJS.marketPrices.bnb , 8 ) ).toFixed(2);
