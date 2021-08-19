@@ -3,7 +3,7 @@
 [![YouTube](https://img.shields.io/youtube/channel/views/UCQD9zAJeF1q4r8haWkia0rA?label=Youtube&style=for-the-badge)](https://www.youtube.com/channel/UCQD9zAJeF1q4r8haWkia0rA)
 
 
-A JS class that enhances the CryptoBlades.io UX experience while offering an edge in battle. BladeMasterJS is open source, but access to the API requires a `.01` BNB tip to the development team every 40 days.  
+A JS class that enhances the CryptoBlades.io UX experience while offering an edge in battle. BladeMasterJS is open source, but access to the API requires a `.01` BNB tip to the development team every 40 days.  You can still download and install this asset and enjoy a 14 day free trial without having to tip any BNB. 
 
 
 ## Features
