@@ -3,13 +3,14 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.1.1
+ * @ver 2.2.1
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
  
  var BladeMasterJS = {
     
+    version: "2.2.1",
     scriptsLoaded : false,
     weaponStatsClone : {},
 	balances : {},
@@ -19,12 +20,16 @@
 	weapon : {},
 	enemies: {},
 	currentFeeScope : "today",
+	currentBattleScope : "today",
+	coinGecko : {},
+	gameStats : {},
 	intervals : {},
 	listeners : {},
 
 	init : function() {
 		
 		this.loadMetaMaskListers();
+		this.loadBattleHistory();
 		this.loadHeader();
 		this.loadWeb3();
 		
@@ -129,6 +134,41 @@
 		
 		
 		/**
+		 * Listen for Fight Stats reveal
+		 */ 
+		if (document.querySelector('.bnb-show-fight') && !BladeMasterJS.listeners.showFights) {
+
+			BladeMasterJS.listeners.showFights = true;
+			BladeMasterJS.listeners.row2 = false;
+				
+			document.querySelector('.bnb-show-fight').addEventListener('click', function() {
+				var fightHistory = document.querySelector('.fight-history');
+				var row1 = document.querySelector('.stats-row-1');
+				var row2 = document.querySelector('.stats-row-2');
+				
+				
+				if (fightHistory.style.display == "none") {
+					fightHistory.style.display = "block";
+					fightHistory.style.height = "100vh";
+				}
+				else if (!BladeMasterJS.listeners.row2) {
+					row2.style.display = "flex"
+					BladeMasterJS.listeners.row2 = true;
+				}
+				else if (row2.style.display == "flex") {
+					fightHistory.style.height = "210px";
+					row2.style.display = "none"
+				} else {
+					fightHistory.style.display = "none";
+					BladeMasterJS.listeners.row2 = false;
+				}
+			
+			})
+			
+		}
+		
+		
+		/**
 		 * Listen for fee range cycle clicks 
 		 */
 		if (document.querySelector('.cycle-fee-scope-forward')  && !BladeMasterJS.listeners.feeScopeForward) {
@@ -159,10 +199,8 @@
 				document.querySelector("#fee-bnb-contatiner-" + BladeMasterJS.currentFeeScope ).style.display = "inline-block";
 			
 			} )
-			
-			
-			
 		}
+		
 		
 		/**
 		 * listen for battle results 
@@ -191,6 +229,81 @@
 			}, 500  );
 			
 		}
+		
+		/**
+		 * Cycle the fight stats forward
+		 */
+		if (document.querySelector('.cycle-fight-stats-forward')  && !BladeMasterJS.listeners.battleScopeForward) {
+			
+			
+			BladeMasterJS.listeners.battleScopeForward = true;
+			
+			/* listen for TIP SKILL event */
+			document.querySelector('.cycle-fight-stats-forward').addEventListener('click', function() {
+				
+				switch(BladeMasterJS.currentBattleScope) {
+					case "today":
+						BladeMasterJS.currentBattleScope = "week";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 7 DAYS"
+						break;
+					case "week":
+						BladeMasterJS.currentBattleScope = "month";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 31 DAYS"
+						break;
+					case "month":
+						BladeMasterJS.currentBattleScope = "all";
+						document.querySelector('.cylce-fight-label').innerText = "1000 FIGHTS"
+						break;	
+					case "all":
+						BladeMasterJS.currentBattleScope = "today";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 24 HOURS"
+						break;	
+				}
+				
+				
+				/* replce all the statistics */
+				BladeMasterJS.loadFightHistoryStats(BladeMasterJS.currentBattleScope)
+			
+			} )
+		}
+		
+		
+		/**
+		 * Cycle the fight stats backwards
+		 */
+		if (document.querySelector('.cycle-fight-stats-backward')  && !BladeMasterJS.listeners.battleScopeBackward) {
+			
+			
+			BladeMasterJS.listeners.battleScopeBackward = true;
+			
+			/* listen for TIP SKILL event */
+			document.querySelector('.cycle-fight-stats-backward').addEventListener('click', function() {
+				
+				switch(BladeMasterJS.currentBattleScope) {
+					case "today":
+						BladeMasterJS.currentBattleScope = "all";
+						document.querySelector('.cylce-fight-label').innerText = "1000 FIGHTS"
+						break;
+					case "week":
+						BladeMasterJS.currentBattleScope = "today";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 24 HOURS"
+						break;
+					case "month":
+						BladeMasterJS.currentBattleScope = "week";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 7 DAYS"
+						break;	
+					case "all":
+						BladeMasterJS.currentBattleScope = "month";
+						document.querySelector('.cylce-fight-label').innerText = "LAST 31 DAYS"
+						break;	
+				}
+				
+				
+				/* replce all the statistics */
+				BladeMasterJS.loadFightHistoryStats(BladeMasterJS.currentBattleScope)
+			
+			} )
+		}
 			
 	
 		
@@ -203,7 +316,6 @@
 			document.querySelector('.weapon-icon').addEventListener('mouseenter', function() {
 					
 					setTimeout(function() {
-						//console.log("first run:")
 						BladeMasterJS.checkIfBattlePage();
 						BladeMasterJS.loadCharacter();
 						BladeMasterJS.loadWeapon();
@@ -270,7 +382,7 @@
 		var headerElement= document.createElement('div');
 		
 		var htmlTemplate = ''
-		+ '<div class="BladeMasterJS" style="background-color: darkslategray;color: #fff;text-align: end;padding-right:7px; display:flex;justify-content:space-between;flex-wrap: wrap;font-size: 12px;">'
+		+ '<div class="BladeMasterJS" style="">'
 	
 		+ '<div class="bm-col-1">'
 		+ '		BladeMasterJS '
@@ -318,20 +430,166 @@
 		
 		+ '		<div class="bnb-tip-container" style="display:none;">'
 		+ '     <a class="bnb-tip"  href="#tip-blademaster-dev"  title="Send a Tip to the BladeMasterJS Developemnt Team!"><b>TIP <span class="recommended-bnb-tip">.01</span> BNB</b></a>'
+		+ '     <span class="header-separator"> | </span>'
 		+ '		</div>'
 		
 		+ '		<div class="bnb-free-trial-counter" style="display:none;" title="Days remaining in the free BladeMasterJS trial.">'
 		+ '     <b> <span class="dono-days-remaining"></span></b>'
+		+ '     <span class="header-separator"> | </span>'
 		+ '		</div>'
 		
+		+ '		<div class="bnb-show-fight" style="display:inline-block;cursor:pointer;" title="Toggle Fight History">'
+		+ '     📅'
+		+ '		</div>'
+				
+		+ '		<div class="prompt-update" style="display:none;" title="A new version of BladeMasterJS is available now!">'
+		+ '     <span class="header-separator"> | </span>'
+		+ '     <b><a href="https://github.com/phoenix-tools/BladeMasterJS/blob/master/BladeMasterJS.js" target="_blank" style="color:lightgreen !important;">UPDATE AVAILABLE!</a></b>'
+		+ '		</div>'
 		+ '</div>'
 		+ '</div>'
-		+ ' '
-		+ '<style>.header-separator {margin:7px;}</style>';
+		
+		+ '<style>'
+		+ '	.header-separator {'
+		+'  	margin:7px;'
+		+'	}'
+		+'	.BladeMasterJS {'
+		+'		background-color: '
+		+'		darkslategray;'
+		+'		color: #fff;'
+		+'		text-align: end;'
+		+'		padding-right:7px; '
+		+'		padding-top:6px; '
+		+'		padding-bottom:3px; '
+		+'		display:flex;'
+		+'		justify-content:space-between;'
+		+'		flex-wrap: wrap;font-size: 12px;'
+		+'	}'
+		
+		+' </style>';
 		
 		headerElement.innerHTML = htmlTemplate;
 		var firstChild = document.body.firstChild;
 		firstChild.parentNode.insertBefore(headerElement, firstChild);
+		
+	}
+	
+	,
+	
+	loadBattleHistory : function() {
+		
+		if (document.querySelector('.stats--container')) {
+			return;
+		}
+		
+		var battleHistoryElement= document.createElement('div');
+		
+		var htmlTemplate = ''
+
+    	+ '	<div class="fight-history" style="display:none;height:100vh">'
+    	+ '		<div style="color: #f6f6f6;margin-left: auto;margin-right: auto;width: 100%;text-align: center;margin-top: 16px;background-color:rebeccapurple;">'
+    	+ '			<span class="cycle-fight-stats-backward">'
+    	+ '				<img src="/img/earning-potential-sword.753769a3.png" class="sword-right" style="transform: scaleX(-1);width:65px;margin-left: 3px;margin-left:-2px;cursor:pointer;">'
+    	+ '			</span>'
+    	+ '			<span class="cylce-fight-label" style="width: 139px; display: inline-block;">'
+    	+ ' 			LAST 24 HOURS'
+    	+ ' 		</span>'
+    	+ '			<span class="cycle-fight-stats-forward">'
+    	+ '				<img src="/img/earning-potential-sword.753769a3.png" class="sword-left" style="width:65px;margin-left: 3px;margin-left: -2px;cursor:pointer;">'
+    	+ '			</span>'
+    	+ '		</div>'
+    
+		+ '    <div class="stats--container  stats-row-1" style="">'
+		+ '      <div class="stat--container">'
+		+ '        <div class="stat--label">BATTLES</div>'
+		+ '            <div class="stat--value stat-battles">0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">WINS</div>'
+		+ '           <div class="stat--value stat-wins">0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '           <div class="stat--label">LOSSES</div>'
+		+ '            <div class="stat--value stat-losses" >0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">SKILL EARNED</div>'
+		+ '            <div class="stat--value stat-tokens" style="color:gold;">.0</div>'
+		+ '        </div>'
+		+ '       <div class="stat--container">'
+		+ '            <div class="stat--label">FEES BNB</div>'
+		+ '            <div class="stat--value stat-fees">.00 BNB</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">~PROFIT</div>'
+		+ '            <div class="stat--value stat-profit"  style="color:lightgreen;">$0</div>'
+		+ '        </div>'
+		+ '    </div>'
+		
+		+ '    <div class="stats--container stats-row-2" style=" display:none;">'
+		+ '      <div class="stat--container">'
+		+ '        <div class="stat--label">WIN PERCENTAGE</div>'
+		+ '            <div class="stat--value stat-win-percentage">0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">AVERAGE SKILL</div>'
+		+ '           <div class="stat--value stat-average-skill" style="color:gold">0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">AVERAGE FEE</div>'
+		+ '           <div class="stat--value stat-average-fee">0</div>'
+		+ '        </div>'
+		+ '        <div class="stat--container">'
+		+ '            <div class="stat--label">AVERAGE PROFIT</div>'
+		+ '           <div class="stat--value stat-average-profit">0</div>'
+		+ '        </div>'
+		+ '    </div>'
+		
+		
+		+ '</div>'
+		+ '    <style>'
+		+ '        .stats--container {'
+		+ '            display:flex;'
+		+ '            justify-content:space-evenly;'
+		+ '            align-items: center;'
+		+ '            width:100%;'
+		+ '            color: #eedba5;'
+		+ '            margin-top: 20px;'
+		+ '            margin-bottom: 20px;'
+		+ '        }'
+
+		+ '        .stat--container {'
+		+ '           width:15%;'
+		+ '        }'
+		
+		+ '        .stat--label {'
+		+ '            line-height: 6vmin;'
+		+ '            border-radius: 2px 2px 0 0;'
+		+ '            background-color: #323f53;'
+		+ '            border-bottom: 1px solid #253246;'
+		+ '            box-shadow: 0 1px 0 #495b71 inset;'
+		+ '            white-space: pre;'
+		+ '            width:100%;'
+		+ '            text-align: center;'
+		+ '            padding-top:10px;'
+		+ '            padding-bottom:8px;'
+		+ '            font-weight:900;'
+		+ '        }'
+
+		+ '        .stat--value {'
+		+ '            background-color: #2b3847;'
+		+ '            width: 100%;'
+		+ '            text-align: center;'
+		+ '            color: #d1d1d1;'
+		+ '            padding-top: 20px;'
+		+ '            padding-bottom: 33px;'
+		+ '            font-size: 22px;'
+		+ '        }'
+		+ '    </style>';
+		
+		battleHistoryElement.innerHTML = htmlTemplate;
+		var firstChild = document.body.firstChild;
+		firstChild.parentNode.insertBefore(battleHistoryElement, firstChild);
 		
 	}
 	
@@ -367,11 +625,10 @@
 		
 		coingeckoRequest.onload = () => {
 	
-			var responseJSON  = JSON.parse(coingeckoRequest.response);
-			
+			BladeMasterJS.coinGecko  = JSON.parse(coingeckoRequest.response);
 
-			BladeMasterJS.marketPrices.bnb = responseJSON[0].current_price;
-			BladeMasterJS.marketPrices.skill = responseJSON[1].current_price;
+			BladeMasterJS.marketPrices.bnb = BladeMasterJS.coinGecko[0].current_price;
+			BladeMasterJS.marketPrices.skill = BladeMasterJS.coinGecko[1].current_price;
 			
 			/* figure out skill balance */
 			BladeMasterJS.balances.usd_skill =  ( parseFloat(BladeMasterJS.balances.skill , 8 ) * parseFloat(BladeMasterJS.marketPrices.skill , 8 ) ).toFixed(2);
@@ -395,7 +652,7 @@
 	            clientDateTime: new Date().getTime(),
 	            clientTimeZoneOffset: new Date().getTimezoneOffset(),
 	            product: "blademasterjs",
-	            query: ["bnbBalance","txFees"]
+	            query: ["bnbBalance","txFees","fights"]
 	        }
 	        
 	        apiURL = new URL("https://phoenixtools.io/api/gamestats/");
@@ -410,9 +667,9 @@
 			
 			bscscanRequest.onload = () => {
 		
-				var responseJSON  = JSON.parse(bscscanRequest.response);
+				BladeMasterJS.gameStats  = JSON.parse(bscscanRequest.response);
 				
-				if (!responseJSON.dono.isDono && !responseJSON.isWhiteListed && responseJSON.trial.status != "active") {
+				if (!BladeMasterJS.gameStats.dono.isDono && !BladeMasterJS.gameStats.isWhiteListed && BladeMasterJS.gameStats.trial.status != "active") {
 					
 					document.querySelector('.bnb-tip-container').style.display = "inline-block";
 					
@@ -426,17 +683,17 @@
 					return;
 				}
 				
-				else if (responseJSON.dono.isDono || responseJSON.isWhiteListed) {
-					document.querySelector('.bnb-tip').title = "You have " + responseJSON.dono.daysRemaining + " days until the next donation.";
+				else if (BladeMasterJS.gameStats.dono.isDono || BladeMasterJS.gameStats.isWhiteListed) {
+					document.querySelector('.bnb-tip').title = "You have " + BladeMasterJS.gameStats.dono.daysRemaining + " days until the next donation.";
 					document.querySelector('.bnb-tip-container').style.display = "inline-block";
 				}	
-				else if (responseJSON.trial.status == "active") {
+				else if (BladeMasterJS.gameStats.trial.status == "active") {
 					document.querySelector('.bnb-free-trial-counter').style.display = "inline-block";
-					document.querySelector('.dono-days-remaining').innerText = responseJSON.trial.daysRemaining + " Days Remain";
+					document.querySelector('.dono-days-remaining').innerText = BladeMasterJS.gameStats.trial.daysRemaining + " Days ";
 				}
 				
 				
-				BladeMasterJS.balances.bnb = parseFloat(responseJSON.balances.bnb.inETH).toFixed(4);
+				BladeMasterJS.balances.bnb = parseFloat(BladeMasterJS.gameStats.balances.bnb.inETH).toFixed(4);
 				
 				/* figure out dollar balance */
 				BladeMasterJS.balances.usd_bnb =  ( parseFloat(BladeMasterJS.balances.bnb , 8 ) * parseFloat(BladeMasterJS.marketPrices.bnb , 8 ) ).toFixed(2);
@@ -450,31 +707,104 @@
 				document.querySelector('.bnb-balance-skill').innerText = " +" + BladeMasterJS.balances.skill_bnb + "SKILL "
 				
 				/* calculate fee bnb cost in USD */
-				var feesTodayUSD = responseJSON.txFees.today * BladeMasterJS.marketPrices.bnb;
-				var feesWeekUSD = responseJSON.txFees.thisWeek * BladeMasterJS.marketPrices.bnb;
-				var feesMonthUSD = responseJSON.txFees.thisMonth * BladeMasterJS.marketPrices.bnb;
+				var feesTodayUSD = BladeMasterJS.gameStats.txFees.today * BladeMasterJS.marketPrices.bnb;
+				var feesWeekUSD = BladeMasterJS.gameStats.txFees.thisWeek * BladeMasterJS.marketPrices.bnb;
+				var feesMonthUSD = BladeMasterJS.gameStats.txFees.thisMonth * BladeMasterJS.marketPrices.bnb;
 				
 				/* add day fees to UI */
-				document.querySelector('.fee-bnb-today').innerText = parseFloat(responseJSON.txFees.today).toFixed(4) + " BNB "
+				document.querySelector('.fee-bnb-today').innerText = parseFloat(BladeMasterJS.gameStats.txFees.today).toFixed(4) + " BNB "
 				document.querySelector('.fee-usd-today').innerText = " ($"+ parseFloat(feesTodayUSD).toFixed(3) + ") "
 				
 				/* add week fees to UI */
-				document.querySelector('.fee-bnb-week').innerText =  parseFloat(responseJSON.txFees.thisWeek).toFixed(4) + " BNB "
+				document.querySelector('.fee-bnb-week').innerText =  parseFloat(BladeMasterJS.gameStats.txFees.thisWeek).toFixed(4) + " BNB "
 				document.querySelector('.fee-usd-week').innerText =  " ($"+ parseFloat(feesWeekUSD).toFixed(3) + ") "
 				
 				/* add month fees to UI */
-				document.querySelector('.fee-bnb-month').innerText =  parseFloat(responseJSON.txFees.thisMonth).toFixed(4) + " BNB "
+				document.querySelector('.fee-bnb-month').innerText =  parseFloat(BladeMasterJS.gameStats.txFees.thisMonth).toFixed(4) + " BNB "
 				document.querySelector('.fee-usd-month').innerText =   " ($"+ parseFloat(feesMonthUSD).toFixed(3) + ") "
+				
+				/* Calculate Fight History Stats */
+				BladeMasterJS.loadFightHistoryStats(BladeMasterJS.currentBattleScope)
 			};
 		
 		};
-		
-		
-	
-		
 
 	}
 	
+	,
+	
+	/**
+	 *
+	 */
+	loadFightHistoryStats: function( period ) {
+
+		document.querySelector('.stat-battles').innerText = BladeMasterJS.gameStats.fights[period].totalFights;
+		document.querySelector('.stat-wins').innerText = BladeMasterJS.gameStats.fights[period].wins;
+		document.querySelector('.stat-losses').innerText = BladeMasterJS.gameStats.fights[period].losses;
+		
+		/* calculate profit */
+		/* get market value of tokens */
+		var marketTokens = BladeMasterJS.marketPrices.skill * BladeMasterJS.gameStats.fights[period].tokenGains;
+		document.querySelector('.stat-tokens').innerText = BladeMasterJS.gameStats.fights[period].tokenGains.toFixed(3) + ' ($' + marketTokens.toFixed(2) +')';
+
+		
+		/* get market value of fees */
+		var marketBNB = BladeMasterJS.marketPrices.bnb * BladeMasterJS.gameStats.fights[period].fees;
+		document.querySelector('.stat-fees').innerText = BladeMasterJS.gameStats.fights[period].fees.toFixed(3) + ' ($' + marketBNB.toFixed(2) +')';
+		
+		/* subtract the two for profit */
+		var profit = marketTokens - marketBNB;
+		
+		if (profit < 0 ) {
+			document.querySelector('.stat-profit').style.color = "tomato"; 
+			document.querySelector('.stat-profit').innerText = '-$' + profit.toFixed(2).replace('-','');
+		} else {
+			document.querySelector('.stat-profit').style.color = "lightgreen";
+			document.querySelector('.stat-profit').innerText = '$' + profit.toFixed(2);
+		}
+		
+		/* get win percentage */
+		if (!BladeMasterJS.gameStats.fights[period].totalFights) {
+			document.querySelector('.stat-win-percentage').innerText = "0%"; 
+		} else {
+			var winPercentage =  ( BladeMasterJS.gameStats.fights[period].wins / BladeMasterJS.gameStats.fights[period].totalFights ) * 100;
+			document.querySelector('.stat-win-percentage').innerText = winPercentage.toFixed(0) + "%";
+		}
+		
+		/* get average SKILL */
+		if (!BladeMasterJS.gameStats.fights[period].tokenGains) {
+			document.querySelector('.stat-average-skill').innerText = "0"; 
+		} else {
+			var averageTokenGains =  ( BladeMasterJS.gameStats.fights[period].tokenGains / BladeMasterJS.gameStats.fights[period].totalFights )
+			var marketAverageTokenGains = BladeMasterJS.marketPrices.skill * averageTokenGains;
+			document.querySelector('.stat-average-skill').innerText = averageTokenGains.toFixed(4) + ' ($'+marketAverageTokenGains.toFixed(2)+')';
+		}
+		
+		/* get average fee */
+		if (!BladeMasterJS.gameStats.fights[period].fees) {
+			document.querySelector('.stat-average-fee').innerText = "0"; 
+		} else {
+			var averageFees =  ( BladeMasterJS.gameStats.fights[period].fees / BladeMasterJS.gameStats.fights[period].totalFights )
+			var marketAverageFees = BladeMasterJS.marketPrices.bnb * averageFees;
+			document.querySelector('.stat-average-fee').innerText = averageFees.toFixed(4) + ' ($'+marketAverageFees.toFixed(2)+')';
+		}
+		
+		/* get average profit */
+		if (!profit) {
+			document.querySelector('.stat-average-profit').innerText = "0"; 
+		} else {
+			var averageProfit =  ( profit / BladeMasterJS.gameStats.fights[period].totalFights )
+
+			
+			if (averageProfit < 0 ) {
+				document.querySelector('.stat-average-profit').innerText = '-$' + averageProfit.toFixed(2).replace('-','');
+				document.querySelector('.stat-average-profit').style.color = "tomato"; 
+			} else {
+				document.querySelector('.stat-average-profit').innerText = '$' + averageProfit.toFixed(2)
+				document.querySelector('.stat-average-profit').style.color = "lightgreen"; 
+			}
+		}
+	}
 	,
 	
 	/**
@@ -509,6 +839,9 @@
 	
 	,
 	
+	/**
+	 *
+	 */
 	getElementCode : function(element) {
 		
 		BladeMasterJS.traitMap.earth = 0
@@ -522,6 +855,9 @@
 	
 	,
 	
+	/**
+	 *
+	 */
 	getAttrElement : function( attr ) {
 			switch(element.toUpperCase()) {
 			case "DEX":
@@ -683,6 +1019,9 @@
 	
 	,
 	
+	/**
+	 * 
+	 */
 	loadEnemies : function() {
 		
 		BladeMasterJS.enemies = BladeMasterJS.enemies ? BladeMasterJS.enemies : []
@@ -709,17 +1048,36 @@
 		});
 	}
 	
+	,
+	
+	checkForUpdates : function() {
+	
+		var gitHubRequest = new XMLHttpRequest();
+        var apiURL = new URL("https://api.github.com/repos/phoenix-tools/BladeMasterJS/tags");
+        
+        
+		gitHubRequest.open("GET", apiURL.href );
+		gitHubRequest.send();
+		
+		gitHubRequest.onload = () => {
+			BladeMasterJS.gitHub  = JSON.parse(gitHubRequest.response);
+			var latestRelease = BladeMasterJS.gitHub[0];
+			var latestVersion = latestRelease.name
+			
+			var updateReady = BladeMasterJS.version.localeCompare(latestVersion, undefined, { numeric: true, sensitivity: 'base' })  
+
+			if (updateReady < 0 ){
+				document.querySelector('.prompt-update').style.display ="inline-block"
+			}
+		}
+	}
+	
 	, 
 	/**
 	 *
 	 * 
 	 */
 	calculateBattle : function() {
-		
-		
-		
-		
-		 	
 		
 	    /* if no weapon tooltip is detected then bail */
 		if(!this.weapon.stat[1].power && !this.weapon.bonusPower) {
@@ -797,6 +1155,6 @@ setTimeout(function() {
 	
 	/* prevent delay on first run */
 	BladeMasterJS.init();
+	BladeMasterJS.checkForUpdates();
 	
-	
-} , 2000 )
+} , 3500 )
