@@ -13,6 +13,7 @@ A JS class that enhances the CryptoBlades.io UX experience while offering an edg
 * Prominently displays the current user's BNB balance as well as its converted values in USD and SKILL
 * Shows user BNB fee expenditure for the Cryptoblades game in the following ranges: 24 hours, 7 days, 31 days.
 * Adds a battle calculator overlay that shows win percentage (must hover mouse over weapon to begin calculations)
+* Adds a fight history breakdown that shows wins, losses, SKILL payouts, and BNB Fees over a 24 hours, 7 day, 31 day, and last 1000 fights view.
 
 ## Feature Screenshots
 
@@ -22,6 +23,9 @@ A JS class that enhances the CryptoBlades.io UX experience while offering an edg
 
 ### Convientent Battle Calculator
 ![image](https://user-images.githubusercontent.com/2002207/128645632-2cc81cef-46f0-4f1a-8971-3af18bd663f2.png)
+
+## Fight Tracker / Battle Tracker
+![image](https://user-images.githubusercontent.com/2002207/130533974-972da6e1-06bd-4906-a5b8-66ad002bbdd7.png)
 
 
 ## How to Install in Chrome
