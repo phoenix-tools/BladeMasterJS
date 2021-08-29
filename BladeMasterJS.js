@@ -3,14 +3,15 @@
  * @title BladeMaster.js
  * @description Welcome BladeMaster! BladeMasterJS is a JS class that enhances the CryptoBlades.io UX experience while also offering an edge to battle
  * 
- * @ver 2.2.1
+ * @ver 2.2.2
  * @author: phoenixtools
  * @contributors: Hudson Atwell
  */
  
  var BladeMasterJS = {
     
-    version: "2.2.1",
+    version: "2.2.2",
+    disableAds : false,
     scriptsLoaded : false,
     weaponStatsClone : {},
 	balances : {},
@@ -43,6 +44,11 @@
 		this.intervals.listeners = setInterval(function( bm ) {
 			bm.loadListeners();
 		}, 500 , this )
+		
+		if(this.disableAds) {
+			document.querySelector('.adsbygoogle').style.display = "none";
+			document.querySelector('.google-auto-placed').style.display = "none";
+		}
 		
 	}
 	
@@ -1065,7 +1071,13 @@
 			var latestVersion = latestRelease.name
 			
 			var updateReady = BladeMasterJS.version.localeCompare(latestVersion, undefined, { numeric: true, sensitivity: 'base' })  
-
+			
+			/*
+			console.log( BladeMasterJS.version)
+			console.log(latestVersion)
+			console.log(updateReady)
+			*/
+			
 			if (updateReady < 0 ){
 				document.querySelector('.prompt-update').style.display ="inline-block"
 			}
