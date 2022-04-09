@@ -1,3 +1,7 @@
+# A Note of Caution re:CryptoBlades
+
+CryptoBlades taught me a lot of about the nature of ponzi schemes. I do not recommend investing time or money into this game or any of the parent company's subsequent games. Because of this, I can't recommend putting any of your time into installing this add-on JS extension. But I had a lot of fun building it. And I'm proud of the work.
+
 # BladeMasterJS
 [![Discord](https://img.shields.io/discord/870816354612170842?color=%235865f2&label=Discord&logo=discord&logoColor=%23fff&style=for-the-badge)](https://discord.gg/6AjVj3s9aN)
 [![YouTube](https://img.shields.io/youtube/channel/views/UCQD9zAJeF1q4r8haWkia0rA?label=Youtube&style=for-the-badge)](https://www.youtube.com/channel/UCQD9zAJeF1q4r8haWkia0rA)
